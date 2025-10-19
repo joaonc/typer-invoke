@@ -10,7 +10,7 @@ else:
         import tomli as tomllib
     except ImportError:
         raise ImportError(
-            "tomli is required for Python < 3.11. Install with: pip install tomli"
+            'tomli is required for Python < 3.11. Install with: pip install tomli'
         )
 
 
@@ -30,7 +30,7 @@ def find_pyproject_toml(start_path: Optional[Path] = None) -> Optional[Path]:
 
     # Walk up the directory tree.
     for parent in [current] + list(current.parents):
-        pyproject_path = parent / "pyproject.toml"
+        pyproject_path = parent / 'pyproject.toml'
         if pyproject_path.exists():
             return pyproject_path
 
@@ -53,17 +53,17 @@ def read_invoke_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]:
 
     if pyproject_path is None:
         raise FileNotFoundError(
-            "pyproject.toml not found in current directory or any parent directory")
+            'pyproject.toml not found in current directory or any parent directory')
 
     try:
-        with open(pyproject_path, "rb") as f:
+        with open(pyproject_path, 'rb') as f:
             data = tomllib.load(f)
 
         # Extract invoke-specific configuration.
-        return data.get("tool", {}).get("invoke", {})
+        return data.get('tool', {}).get('invoke', {})
 
     except Exception as e:
-        raise Exception(f"Error reading {pyproject_path}: {e}")
+        raise Exception(f'Error reading {pyproject_path}: {e}')
 
 
 def get_invoke_setting(key: str, default: Any = None, pyproject_path: Optional[Path] = None) -> Any:
@@ -138,27 +138,27 @@ class InvokeConfig:
 
 
 # Example usage
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Method 1: Direct function calls
     try:
         config = read_invoke_config()
-        print("Invoke configuration:", config)
+        print('Invoke configuration:', config)
 
         # Get specific settings
-        task_timeout = get_invoke_setting("task_timeout", default=300)
-        debug_mode = get_invoke_setting("debug", default=False)
+        task_timeout = get_invoke_setting('task_timeout', default=300)
+        debug_mode = get_invoke_setting('debug', default=False)
 
-        print(f"Task timeout: {task_timeout}")
-        print(f"Debug mode: {debug_mode}")
+        print(f'Task timeout: {task_timeout}')
+        print(f'Debug mode: {debug_mode}')
 
     except FileNotFoundError:
-        print("No pyproject.toml found")
+        print('No pyproject.toml found')
     except Exception as e:
-        print(f"Error: {e}")
+        print(f'Error: {e}')
 
     # Method 2: Using the config class
     invoke_config = InvokeConfig()
-    task_timeout = invoke_config.get("task_timeout", 300)
-    custom_tasks_dir = invoke_config.get("tasks_dir", "tasks")
+    task_timeout = invoke_config.get('task_timeout', 300)
+    custom_tasks_dir = invoke_config.get('tasks_dir', 'tasks')
 
-    print(f"Using config class - timeout: {task_timeout}, tasks_dir: {custom_tasks_dir}")
+    print(f'Using config class - timeout: {task_timeout}, tasks_dir: {custom_tasks_dir}')
