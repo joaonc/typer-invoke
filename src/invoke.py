@@ -18,18 +18,17 @@ def find_pyproject_toml(start_path: Optional[Path] = None) -> Optional[Path]:
     """
     Find pyproject.toml by walking up the directory tree from start_path.
 
-    Args:
-        start_path: Directory to start searching from. Defaults to current working directory.
-
-    Returns:
-        Path to pyproject.toml if found, None otherwise.
+    :param start_path: Directory to start searching from. Defaults to current working directory.
+    :type start_path: Optional[Path]
+    :returns: Path to pyproject.toml if found, None otherwise.
+    :rtype: Optional[Path]
     """
     if start_path is None:
         start_path = Path.cwd()
 
     current = Path(start_path).resolve()
 
-    # Walk up the directory tree
+    # Walk up the directory tree.
     for parent in [current] + list(current.parents):
         pyproject_path = parent / "pyproject.toml"
         if pyproject_path.exists():
@@ -42,15 +41,12 @@ def read_invoke_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]:
     """
     Read invoke configuration from pyproject.toml.
 
-    Args:
-        pyproject_path: Path to pyproject.toml. If None, searches for it automatically.
-
-    Returns:
-        Dictionary containing invoke configuration, empty dict if not found.
-
-    Raises:
-        FileNotFoundError: If pyproject.toml is not found
-        tomllib.TOMLDecodeError: If pyproject.toml is malformed
+    :param pyproject_path: Path to pyproject.toml. If None, searches for it automatically.
+    :type pyproject_path: Optional[Path]
+    :returns: Dictionary containing invoke configuration, empty dict if not found.
+    :rtype: Dict[str, Any]
+    :raises FileNotFoundError: If pyproject.toml is not found
+    :raises tomllib.TOMLDecodeError: If pyproject.toml is malformed
     """
     if pyproject_path is None:
         pyproject_path = find_pyproject_toml()
@@ -63,7 +59,7 @@ def read_invoke_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]:
         with open(pyproject_path, "rb") as f:
             data = tomllib.load(f)
 
-        # Extract invoke-specific configuration
+        # Extract invoke-specific configuration.
         return data.get("tool", {}).get("invoke", {})
 
     except Exception as e:
@@ -74,13 +70,14 @@ def get_invoke_setting(key: str, default: Any = None, pyproject_path: Optional[P
     """
     Get a specific invoke setting from pyproject.toml.
 
-    Args:
-        key: Configuration key to retrieve
-        default: Default value if key is not found
-        pyproject_path: Path to pyproject.toml
-
-    Returns:
-        The configuration value or default
+    :param key: Configuration key to retrieve
+    :type key: str
+    :param default: Default value if key is not found
+    :type default: Any
+    :param pyproject_path: Path to pyproject.toml
+    :type pyproject_path: Optional[Path]
+    :returns: The configuration value or default
+    :rtype: Any
     """
     try:
         config = read_invoke_config(pyproject_path)
@@ -91,15 +88,28 @@ def get_invoke_setting(key: str, default: Any = None, pyproject_path: Optional[P
 
 # Example usage and utility class
 class InvokeConfig:
-    """Configuration manager for invoke settings from pyproject.toml."""
+    """
+    Configuration manager for invoke settings from ``pyproject.toml``.
+    """
 
     def __init__(self, pyproject_path: Optional[Path] = None):
+        """
+        Initialize InvokeConfig.
+
+        :param pyproject_path: Path to pyproject.toml
+        :type pyproject_path: Optional[Path]
+        """
         self.pyproject_path = pyproject_path
         self._config = None
 
     @property
     def config(self) -> Dict[str, Any]:
-        """Lazy-load configuration."""
+        """
+        Lazy-load configuration.
+
+        :returns: Dictionary containing invoke configuration
+        :rtype: Dict[str, Any]
+        """
         if self._config is None:
             try:
                 self._config = read_invoke_config(self.pyproject_path)
@@ -108,11 +118,22 @@ class InvokeConfig:
         return self._config
 
     def get(self, key: str, default: Any = None) -> Any:
-        """Get a configuration value."""
+        """
+        Get a configuration value.
+
+        :param key: Configuration key to retrieve
+        :type key: str
+        :param default: Default value if key is not found
+        :type default: Any
+        :returns: The configuration value or default
+        :rtype: Any
+        """
         return self.config.get(key, default)
 
     def reload(self) -> None:
-        """Reload configuration from file."""
+        """
+        Reload configuration from file.
+        """
         self._config = None
 
 
