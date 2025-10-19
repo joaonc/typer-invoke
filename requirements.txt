@@ -1,0 +1,10 @@
+# Package
+typer
+
+# Dev
+black
+flake8-pyproject
+flake8
+isort
+mypy
+pytest
