@@ -14,14 +14,13 @@ else:
         )
 
 
-def find_pyproject_toml(start_path: Optional[Path] = None) -> Optional[Path]:
+def find_pyproject_toml(start_path: Optional[Path] = None) -> Path:
     """
     Find pyproject.toml by walking up the directory tree from start_path.
 
     :param start_path: Directory to start searching from. Defaults to current working directory.
-    :type start_path: Optional[Path]
-    :returns: Path to pyproject.toml if found, None otherwise.
-    :rtype: Optional[Path]
+    :returns: Path to ``pyproject.toml``.
+    :raises FileNotFoundError: If pyproject.toml is not found.
     """
     if start_path is None:
         start_path = Path.cwd()
@@ -34,7 +33,7 @@ def find_pyproject_toml(start_path: Optional[Path] = None) -> Optional[Path]:
         if pyproject_path.exists():
             return pyproject_path
 
-    return None
+    raise FileNotFoundError('pyproject.toml not found.')
 
 
 def read_invoke_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]:
@@ -42,11 +41,10 @@ def read_invoke_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]:
     Read invoke configuration from pyproject.toml.
 
     :param pyproject_path: Path to pyproject.toml. If None, searches for it automatically.
-    :type pyproject_path: Optional[Path]
     :returns: Dictionary containing invoke configuration, empty dict if not found.
-    :rtype: Dict[str, Any]
-    :raises FileNotFoundError: If pyproject.toml is not found
-    :raises tomllib.TOMLDecodeError: If pyproject.toml is malformed
+
+    :raises FileNotFoundError: If pyproject.toml is not found.
+    :raises tomllib.TOMLDecodeError: If pyproject.toml is malformed.
     """
     if pyproject_path is None:
         pyproject_path = find_pyproject_toml()
@@ -71,13 +69,9 @@ def get_invoke_setting(key: str, default: Any = None, pyproject_path: Optional[P
     Get a specific invoke setting from pyproject.toml.
 
     :param key: Configuration key to retrieve
-    :type key: str
     :param default: Default value if key is not found
-    :type default: Any
     :param pyproject_path: Path to pyproject.toml
-    :type pyproject_path: Optional[Path]
     :returns: The configuration value or default
-    :rtype: Any
     """
     try:
         config = read_invoke_config(pyproject_path)
@@ -87,17 +81,17 @@ def get_invoke_setting(key: str, default: Any = None, pyproject_path: Optional[P
 
 
 # Example usage and utility class
-class InvokeConfig:
+class PackageConfig:
     """
     Configuration manager for invoke settings from ``pyproject.toml``.
     """
 
-    def __init__(self, pyproject_path: Optional[Path] = None):
+    def __init__(self, package: str, pyproject_path: Optional[Path] = None):
         """
-        Initialize InvokeConfig.
+        Initialize PackageConfig.
 
-        :param pyproject_path: Path to pyproject.toml
-        :type pyproject_path: Optional[Path]
+        :param package: Name of the package.
+        :param pyproject_path: Path to ``pyproject.toml``
         """
         self.pyproject_path = pyproject_path
         self._config = None
@@ -107,8 +101,7 @@ class InvokeConfig:
         """
         Lazy-load configuration.
 
-        :returns: Dictionary containing invoke configuration
-        :rtype: Dict[str, Any]
+        :returns: Dictionary containing invoke configuration.
         """
         if self._config is None:
             try:
@@ -122,11 +115,8 @@ class InvokeConfig:
         Get a configuration value.
 
         :param key: Configuration key to retrieve
-        :type key: str
         :param default: Default value if key is not found
-        :type default: Any
         :returns: The configuration value or default
-        :rtype: Any
         """
         return self.config.get(key, default)
 
@@ -157,7 +147,7 @@ if __name__ == '__main__':
         print(f'Error: {e}')
 
     # Method 2: Using the config class
-    invoke_config = InvokeConfig()
+    invoke_config = PackageConfig()
     task_timeout = invoke_config.get('task_timeout', 300)
     custom_tasks_dir = invoke_config.get('tasks_dir', 'tasks')
 
