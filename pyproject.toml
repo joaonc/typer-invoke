@@ -19,12 +19,7 @@ python_files = ['tests.py', 'test_*.py', '*_tests.py']
 python_classes = ['Test*']
 python_functions = ['test_*']
 testpaths = ['tests']
-addopts = [
-  '--strict-markers',
-  '--reuse-db',
-  '--no-migrations',
-  '-v',
-]
+addopts = ['--strict-markers', '-v']
 markers = [
   'unit: Unit tests',
   'integration: Integration tests',
