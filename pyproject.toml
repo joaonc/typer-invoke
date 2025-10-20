@@ -15,17 +15,11 @@ sections = 'FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER'
 skip_glob = ['**/.venv*', '**/venv*', '/build']
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = 'config.settings'
 python_files = ['tests.py', 'test_*.py', '*_tests.py']
 python_classes = ['Test*']
 python_functions = ['test_*']
 testpaths = ['tests']
-addopts = [
-  '--strict-markers',
-  '--reuse-db',
-  '--no-migrations',
-  '-v',
-]
+addopts = ['--strict-markers', '-v']
 markers = [
   'unit: Unit tests',
   'integration: Integration tests',
@@ -41,9 +35,6 @@ check_untyped_defs = true
 exclude = [
     '.venv.*', 'venv.*'
 ]
-
-[tool.django-stubs]
-django_settings_module = 'config.settings'
 
 [[tool.mypy.overrides]]
 module = []
@@ -61,4 +52,9 @@ max-line-length = 100
 extend-ignore = ['E203', 'E266', 'E501', 'W503', 'F811']
 exclude = [
     '.git', '.github', '__pycache__', '.venv*', 'venv*', 'build', 'dist', 'docs'
+]
+
+[tool.typer-invoke]
+modules = [
+
 ]
