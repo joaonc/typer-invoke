@@ -98,7 +98,7 @@ tasks_dir = "custom_tasks"
 """
         pyproject_file.write_text(content)
         
-        result = read_package_config(pyproject_file)
+        result = read_package_config('invoke', pyproject_file)
         expected = {
             'timeout': 30,
             'debug': True,
@@ -115,7 +115,7 @@ timeout = 60
         pyproject_file.write_text(content)
         
         with patch('src.pyproject.find_pyproject_toml', return_value=pyproject_file):
-            result = read_package_config()
+            result = read_package_config('invoke')
             assert result == {'timeout': 60}
     
     def test_read_package_config_no_tool_section(self, tmp_path):
@@ -126,7 +126,7 @@ name = "test"
 """
         pyproject_file.write_text(content)
         
-        result = read_package_config(pyproject_file)
+        result = read_package_config('invoke', pyproject_file)
         assert result == {}
     
     def test_read_package_config_no_invoke_section(self, tmp_path):
@@ -137,7 +137,7 @@ config = "value"
 """
         pyproject_file.write_text(content)
         
-        result = read_package_config(pyproject_file)
+        result = read_package_config('invoke', pyproject_file)
         assert result == {}
     
     def test_read_package_config_empty_invoke_section(self, tmp_path):
@@ -147,14 +147,14 @@ config = "value"
 """
         pyproject_file.write_text(content)
         
-        result = read_package_config(pyproject_file)
+        result = read_package_config('invoke', pyproject_file)
         assert result == {}
     
     def test_read_package_config_file_not_found_auto_discovery(self):
         """Test FileNotFoundError when auto-discovery fails."""
         with patch('src.pyproject.find_pyproject_toml', side_effect=FileNotFoundError()):
             with pytest.raises(FileNotFoundError):
-                read_package_config()
+                read_package_config('invoke')
     
     def test_read_package_config_malformed_toml(self, tmp_path):
         """Test handling malformed TOML."""
@@ -162,7 +162,7 @@ config = "value"
         pyproject_file.write_text('[tool.invoke\nmalformed toml')
         
         with pytest.raises(Exception, match=f'Error reading {pyproject_file}'):
-            read_package_config(pyproject_file)
+            read_package_config('invoke', pyproject_file)
     
     def test_read_package_config_file_permission_error(self, tmp_path):
         """Test handling file permission errors."""
@@ -171,7 +171,7 @@ config = "value"
         
         with patch('builtins.open', side_effect=PermissionError('Access denied')):
             with pytest.raises(Exception, match=f'Error reading {pyproject_file}'):
-                read_package_config(pyproject_file)
+                read_package_config('invoke', pyproject_file)
 
 
 class TestGetPackageSetting:
@@ -186,7 +186,7 @@ debug = false
 """
         pyproject_file.write_text(content)
         
-        result = get_package_setting('timeout', pyproject_path=pyproject_file)
+        result = get_package_setting('invoke', 'timeout', pyproject_path=pyproject_file)
         assert result == 45
     
     def test_get_package_setting_missing_key_with_default(self, tmp_path):
@@ -198,7 +198,7 @@ timeout = 45
         pyproject_file.write_text(content)
         
         result = get_package_setting(
-            'missing_key', default='default_value', pyproject_path=pyproject_file
+            'invoke', 'missing_key', default='default_value', pyproject_path=pyproject_file
         )
         assert result == 'default_value'
     
@@ -210,25 +210,25 @@ timeout = 45
 """
         pyproject_file.write_text(content)
         
-        result = get_package_setting('missing_key', pyproject_path=pyproject_file)
+        result = get_package_setting('invoke', 'missing_key', pyproject_path=pyproject_file)
         assert result is None
     
     def test_get_package_setting_file_not_found_returns_default(self):
         """Test returning default when file is not found."""
         with patch('src.pyproject.read_package_config', side_effect=FileNotFoundError()):
-            result = get_package_setting('timeout', default=300)
+            result = get_package_setting('invoke', 'timeout', default=300)
             assert result == 300
     
     def test_get_package_setting_exception_returns_default(self, tmp_path):
         """Test returning default when exception occurs."""
         with patch('src.pyproject.read_package_config', side_effect=Exception('Some error')):
-            result = get_package_setting('timeout', default=120)
+            result = get_package_setting('invoke', 'timeout', default=120)
             assert result == 120
     
     def test_get_package_setting_none_default(self, tmp_path):
         """Test that None default is returned properly."""
         with patch('src.pyproject.read_package_config', side_effect=FileNotFoundError()):
-            result = get_package_setting('timeout')
+            result = get_package_setting('invoke', 'timeout')
             assert result is None
 
 
@@ -237,14 +237,14 @@ class TestPackageConfig:
     
     def test_package_config_initialization(self):
         """Test PackageConfig initialization."""
-        config = PackageConfig('test_package')
+        config = PackageConfig('invoke')
         assert config.pyproject_path is None
         assert config._config is None
     
     def test_package_config_initialization_with_path(self, tmp_path):
         """Test PackageConfig initialization with path."""
         pyproject_file = tmp_path / 'pyproject.toml'
-        config = PackageConfig('test_package', pyproject_file)
+        config = PackageConfig('invoke', pyproject_file)
         assert config.pyproject_path == pyproject_file
         assert config._config is None
     
@@ -257,7 +257,7 @@ debug = true
 """
         pyproject_file.write_text(content)
         
-        config = PackageConfig('test_package', pyproject_file)
+        config = PackageConfig('invoke', pyproject_file)
         
         # Config should be None initially
         assert config._config is None
@@ -281,7 +281,7 @@ tasks_dir = "custom"
 """
         pyproject_file.write_text(content)
         
-        config = PackageConfig('test_package', pyproject_file)
+        config = PackageConfig('invoke', pyproject_file)
         assert config.get('timeout') == 60
         assert config.get('tasks_dir') == 'custom'
     
@@ -293,14 +293,14 @@ timeout = 60
 """
         pyproject_file.write_text(content)
         
-        config = PackageConfig('test_package', pyproject_file)
+        config = PackageConfig('invoke', pyproject_file)
         assert config.get('missing_key') is None
         assert config.get('missing_key', 'default') == 'default'
     
     def test_package_config_file_not_found(self):
         """Test behavior when pyproject.toml is not found."""
         with patch('src.pyproject.read_package_config', side_effect=FileNotFoundError()):
-            config = PackageConfig('test_package')
+            config = PackageConfig('invoke')
             
             # Should return empty dict when file not found
             assert config.config == {}
@@ -309,7 +309,7 @@ timeout = 60
     def test_package_config_exception_handling(self):
         """Test behavior when exception occurs during config loading."""
         with patch('src.pyproject.read_package_config', side_effect=Exception('Some error')):
-            config = PackageConfig('test_package')
+            config = PackageConfig('invoke')
             
             # Should return empty dict when exception occurs
             assert config.config == {}
@@ -323,7 +323,7 @@ timeout = 30
 """
         pyproject_file.write_text(content1)
         
-        config = PackageConfig('test_package', pyproject_file)
+        config = PackageConfig('invoke', pyproject_file)
         
         # Load initial config
         assert config.get('timeout') == 30
@@ -349,7 +349,7 @@ timeout = 30
 """
         pyproject_file.write_text(content)
         
-        config = PackageConfig('test_package', pyproject_file)
+        config = PackageConfig('invoke', pyproject_file)
         
         # Load config
         _ = config.config
