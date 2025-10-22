@@ -88,7 +88,7 @@ def get_package_setting(
         return default
 
 
-# Example usage and utility class
+# Utility class, alternative to calling ``read_package_config`` directly
 class PackageConfig:
     """
     Configuration manager for package settings from ``pyproject.toml``.
@@ -134,30 +134,3 @@ class PackageConfig:
         Reload configuration from file.
         """
         self._config = None
-
-
-# Example usage
-if __name__ == '__main__':
-    # Method 1: Direct function calls
-    try:
-        config_ = read_package_config('invoke')
-        print('Package configuration:', config_)
-
-        # Get specific settings
-        task_timeout_ = get_package_setting('invoke', 'task_timeout', default=300)
-        debug_mode_ = get_package_setting('invoke', 'debug', default=False)
-
-        print(f'Task timeout: {task_timeout_}')
-        print(f'Debug mode: {debug_mode_}')
-
-    except FileNotFoundError:
-        print('No ``pyproject.toml`` found')
-    except Exception as e_:
-        print(f'Error: {e_}')
-
-    # Method 2: Using the config class
-    package_config_ = PackageConfig()
-    task_timeout_ = package_config_.get('task_timeout', 300)
-    custom_tasks_dir_ = package_config_.get('tasks_dir', 'tasks')
-
-    print(f'Using config class - timeout: {task_timeout_}, tasks_dir: {custom_tasks_dir_}')
