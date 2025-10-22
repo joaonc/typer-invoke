@@ -56,5 +56,5 @@ exclude = [
 
 [tool.typer-invoke]
 modules = [
-
+    'sample.hello'
 ]

@@ -1,5 +1,4 @@
 import importlib
-import sys
 
 import typer
 
@@ -39,27 +38,32 @@ def create_app(module_paths: list[str]) -> typer.Typer:
     return app
 
 
-def main(module_paths: list[str] | None = None):
+def main():
     """Entry point for the invoke CLI.
 
-    Args:
-        module_paths: List of module paths to load. If None, reads from sys.argv.
+    Retrieves modules to import from ``pyproject.toml`` and creates a main Typer app.
     """
-    if module_paths is None:
-        # Parse command line arguments
-        # sys.argv[0] is the script name, we need at least one module path
-        if len(sys.argv) < 2:
-            typer.echo('Error: No module paths specified', err=True)
-            typer.echo('Usage: python -m src <module_path> [command] [args...]', err=True)
-            typer.echo('Example: python -m src sample.hello world', err=True)
-            sys.exit(1)
+    from .pyproject import read_package_config
 
-        # First argument is the module path, rest are passed to the app
-        module_paths = [sys.argv[1]]
-        # Remove the module path from sys.argv so Typer gets the remaining args
-        sys.argv = [sys.argv[0]] + sys.argv[2:]
+    section_name = 'typer-invoke'
+    key = 'modules'
+    invoke_config = read_package_config(section_name)
+    if not invoke_config:
+        typer.echo(
+            f'Error: Could not read invoke configuration from `pyproject.toml`, '
+            f'in section `{section_name}`',
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    if key not in invoke_config:
+        typer.echo(
+            f'Error: Could not find `{key}` key in invoke configuration from `pyproject.toml`, '
+            f'in section `{section_name}`',
+            err=True,
+        )
+        raise typer.Exit(code=1)
 
-    app = create_app(module_paths)
+    app = create_app(invoke_config['modules'])
     app()
 
 

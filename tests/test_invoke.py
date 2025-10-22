@@ -182,58 +182,13 @@ class TestMain:
         mock_app = Mock(spec=typer.Typer)
 
         with patch('src.invoke.create_app', return_value=mock_app) as mock_create:
-            main(module_paths=['sample.hello'])
+            main()
 
             # Verify create_app was called with correct module paths
             mock_create.assert_called_once_with(['sample.hello'])
 
             # Verify the app was invoked
             mock_app.assert_called_once()
-
-    def test_main_with_custom_module_paths(self):
-        """Test main function with custom module paths."""
-        mock_app = Mock(spec=typer.Typer)
-
-        with patch('src.invoke.create_app', return_value=mock_app) as mock_create:
-            main(module_paths=['custom.module', 'another.module'])
-
-            # Verify create_app was called with custom paths
-            mock_create.assert_called_once_with(['custom.module', 'another.module'])
-            mock_app.assert_called_once()
-
-    def test_main_parses_cli_arguments(self):
-        """Test that main parses module path from CLI arguments."""
-        import sys as sys_module
-
-        mock_app = Mock(spec=typer.Typer)
-
-        # Store original sys.argv
-        original_argv = sys_module.argv[:]
-
-        try:
-            with patch('src.invoke.create_app', return_value=mock_app) as mock_create:
-                sys_module.argv = ['script.py', 'sample.hello', 'hello', 'world']
-                main()
-
-                # Should extract module path and modify sys.argv
-                mock_create.assert_called_once_with(['sample.hello'])
-                mock_app.assert_called_once()
-                # sys.argv should be modified to remove module path
-                assert sys_module.argv == ['script.py', 'hello', 'world']
-        finally:
-            # Restore original sys.argv
-            sys_module.argv = original_argv
-
-    def test_main_no_arguments_exits(self, capsys):
-        """Test that main exits with error when no arguments provided."""
-        with patch('sys.argv', ['script.py']):
-            with pytest.raises(SystemExit) as exc_info:
-                main()
-
-            assert exc_info.value.code == 1
-            captured = capsys.readouterr()
-            assert 'No module paths specified' in captured.err
-            assert 'Usage:' in captured.err
 
 
 class TestIntegration:
@@ -334,7 +289,7 @@ class TestModuleNameExtraction:
     def test_module_name_extraction(self, module_path, expected_name, mock_typer_app):
         """Test that module names are correctly extracted from various paths."""
         with patch('src.invoke.load_module_app', return_value=mock_typer_app):
-            app = create_app([module_path])
+            create_app([module_path])
 
             # Check that the extracted name matches expected
             extracted_name = module_path.split('.')[-1]
