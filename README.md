@@ -1,2 +1,3 @@
 # typer-invoke
-Invoke typer apps
+
+Simplified invokation of typer apps from any directory.

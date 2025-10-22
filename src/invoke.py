@@ -25,7 +25,7 @@ def create_app(module_paths: list[str]) -> typer.Typer:
     app = typer.Typer()
 
     for module_path in module_paths:
-        # Extract the module name (last part of the path) to use as subcommand name
+        # Extract the module name (last part of the path) to use as subcommand name.
         module_name = module_path.split('.')[-1]
 
         # Load the module's Typer app
@@ -39,7 +39,8 @@ def create_app(module_paths: list[str]) -> typer.Typer:
 
 
 def main():
-    """Entry point for the invoke CLI.
+    """
+    Entry point for the invoke CLI.
 
     Retrieves modules to import from ``pyproject.toml`` and creates a main Typer app.
     """
