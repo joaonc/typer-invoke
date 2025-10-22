@@ -88,7 +88,7 @@ def get_package_setting(
         return default
 
 
-# Utility class, alternative to calling ``read_package_config`` directly
+# Utility class, alternative to calling ``read_package_config`` directly.
 class PackageConfig:
     """
     Configuration manager for package settings from ``pyproject.toml``.
