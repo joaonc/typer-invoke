@@ -9,12 +9,10 @@ else:
     try:
         import tomli as tomllib
     except ImportError:
-        raise ImportError(
-            'tomli is required for Python < 3.11. Install with: pip install tomli'
-        )
+        raise ImportError('tomli is required for Python < 3.11. Install with: pip install tomli')
 
 
-def find_pyproject_toml(start_path: Optional[Path] = None) -> Path:
+def find_pyproject_toml(start_path: str | Path | None = None) -> Path:
     """
     Find ``pyproject.toml`` by walking up the directory tree from start_path.
 
@@ -36,12 +34,12 @@ def find_pyproject_toml(start_path: Optional[Path] = None) -> Path:
     raise FileNotFoundError('pyproject.toml not found.')
 
 
-def read_package_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]:
+def read_package_config(pyproject_path: str | Path | None = None) -> Dict[str, Any]:
     """
-    Read invoke configuration from pyproject.toml.
+    Read package configuration from pyproject.toml.
 
     :param pyproject_path: Path to pyproject.toml. If None, searches for it automatically.
-    :returns: Dictionary containing invoke configuration, empty dict if not found.
+    :returns: Dictionary containing package configuration, empty dict if not found.
 
     :raises FileNotFoundError: If ``pyproject.toml`` is not found.
     :raises tomllib.TOMLDecodeError: If ``pyproject.toml`` is malformed.
@@ -51,22 +49,25 @@ def read_package_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]
 
     if pyproject_path is None:
         raise FileNotFoundError(
-            'pyproject.toml not found in current directory or any parent directory')
+            'pyproject.toml not found in current directory or any parent directory'
+        )
 
     try:
         with open(pyproject_path, 'rb') as f:
             data = tomllib.load(f)
 
-        # Extract invoke-specific configuration.
+        # Extract package-specific configuration.
         return data.get('tool', {}).get('invoke', {})
 
     except Exception as e:
         raise Exception(f'Error reading {pyproject_path}: {e}')
 
 
-def get_invoke_setting(key: str, default: Any = None, pyproject_path: Optional[Path] = None) -> Any:
+def get_package_setting(
+    key: str, default: Any = None, pyproject_path: str | Path | None = None
+) -> Any:
     """
-    Get a specific invoke setting from pyproject.toml.
+    Get a specific package setting from pyproject.toml.
 
     :param key: Configuration key to retrieve
     :param default: Default value if key is not found
@@ -83,10 +84,10 @@ def get_invoke_setting(key: str, default: Any = None, pyproject_path: Optional[P
 # Example usage and utility class
 class PackageConfig:
     """
-    Configuration manager for invoke settings from ``pyproject.toml``.
+    Configuration manager for package settings from ``pyproject.toml``.
     """
 
-    def __init__(self, package: str, pyproject_path: Optional[Path] = None):
+    def __init__(self, package: str, pyproject_path: str | Path | None = None):
         """
         Initialize PackageConfig.
 
@@ -102,7 +103,7 @@ class PackageConfig:
         """
         Lazy-load configuration.
 
-        :returns: Dictionary containing invoke configuration.
+        :returns: Dictionary containing package configuration.
         """
         if self._config is None:
             try:
@@ -132,24 +133,24 @@ class PackageConfig:
 if __name__ == '__main__':
     # Method 1: Direct function calls
     try:
-        config = read_package_config()
-        print('Invoke configuration:', config)
+        config_ = read_package_config()
+        print('Package configuration:', config_)
 
         # Get specific settings
-        task_timeout = get_invoke_setting('task_timeout', default=300)
-        debug_mode = get_invoke_setting('debug', default=False)
+        task_timeout_ = get_package_setting('task_timeout', default=300)
+        debug_mode_ = get_package_setting('debug', default=False)
 
-        print(f'Task timeout: {task_timeout}')
-        print(f'Debug mode: {debug_mode}')
+        print(f'Task timeout: {task_timeout_}')
+        print(f'Debug mode: {debug_mode_}')
 
     except FileNotFoundError:
         print('No ``pyproject.toml`` found')
-    except Exception as e:
-        print(f'Error: {e}')
+    except Exception as e_:
+        print(f'Error: {e_}')
 
     # Method 2: Using the config class
-    invoke_config = PackageConfig()
-    task_timeout = invoke_config.get('task_timeout', 300)
-    custom_tasks_dir = invoke_config.get('tasks_dir', 'tasks')
+    package_config_ = PackageConfig()
+    task_timeout_ = package_config_.get('task_timeout', 300)
+    custom_tasks_dir_ = package_config_.get('tasks_dir', 'tasks')
 
-    print(f'Using config class - timeout: {task_timeout}, tasks_dir: {custom_tasks_dir}')
+    print(f'Using config class - timeout: {task_timeout_}, tasks_dir: {custom_tasks_dir_}')

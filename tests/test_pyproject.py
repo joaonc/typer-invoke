@@ -14,7 +14,7 @@ else:
 from src.pyproject import (
     find_pyproject_toml,
     read_package_config,
-    get_invoke_setting,
+    get_package_setting,
     PackageConfig
 )
 
@@ -174,10 +174,10 @@ config = "value"
                 read_package_config(pyproject_file)
 
 
-class TestGetInvokeSetting:
-    """Test get_invoke_setting function."""
+class TestGetPackageSetting:
+    """Test get_package_setting function."""
     
-    def test_get_invoke_setting_existing_key(self, tmp_path):
+    def test_get_package_setting_existing_key(self, tmp_path):
         """Test getting existing setting."""
         pyproject_file = tmp_path / 'pyproject.toml'
         content = """[tool.invoke]
@@ -186,10 +186,10 @@ debug = false
 """
         pyproject_file.write_text(content)
         
-        result = get_invoke_setting('timeout', pyproject_path=pyproject_file)
+        result = get_package_setting('timeout', pyproject_path=pyproject_file)
         assert result == 45
     
-    def test_get_invoke_setting_missing_key_with_default(self, tmp_path):
+    def test_get_package_setting_missing_key_with_default(self, tmp_path):
         """Test getting missing setting with default value."""
         pyproject_file = tmp_path / 'pyproject.toml'
         content = """[tool.invoke]
@@ -197,12 +197,12 @@ timeout = 45
 """
         pyproject_file.write_text(content)
         
-        result = get_invoke_setting(
+        result = get_package_setting(
             'missing_key', default='default_value', pyproject_path=pyproject_file
         )
         assert result == 'default_value'
     
-    def test_get_invoke_setting_missing_key_no_default(self, tmp_path):
+    def test_get_package_setting_missing_key_no_default(self, tmp_path):
         """Test getting missing setting without default value."""
         pyproject_file = tmp_path / 'pyproject.toml'
         content = """[tool.invoke]
@@ -210,25 +210,25 @@ timeout = 45
 """
         pyproject_file.write_text(content)
         
-        result = get_invoke_setting('missing_key', pyproject_path=pyproject_file)
+        result = get_package_setting('missing_key', pyproject_path=pyproject_file)
         assert result is None
     
-    def test_get_invoke_setting_file_not_found_returns_default(self):
+    def test_get_package_setting_file_not_found_returns_default(self):
         """Test returning default when file is not found."""
         with patch('src.pyproject.read_package_config', side_effect=FileNotFoundError()):
-            result = get_invoke_setting('timeout', default=300)
+            result = get_package_setting('timeout', default=300)
             assert result == 300
     
-    def test_get_invoke_setting_exception_returns_default(self, tmp_path):
+    def test_get_package_setting_exception_returns_default(self, tmp_path):
         """Test returning default when exception occurs."""
         with patch('src.pyproject.read_package_config', side_effect=Exception('Some error')):
-            result = get_invoke_setting('timeout', default=120)
+            result = get_package_setting('timeout', default=120)
             assert result == 120
     
-    def test_get_invoke_setting_none_default(self, tmp_path):
+    def test_get_package_setting_none_default(self, tmp_path):
         """Test that None default is returned properly."""
         with patch('src.pyproject.read_package_config', side_effect=FileNotFoundError()):
-            result = get_invoke_setting('timeout')
+            result = get_package_setting('timeout')
             assert result is None
 
 
