@@ -1,4 +1,5 @@
 import importlib
+import sys
 
 import typer
 
@@ -11,12 +12,12 @@ def load_module_app(module_path: str) -> typer.Typer | None:
             return module.app
         else:
             typer.echo(
-                f"Warning: Module '{module_path}' does not have a Typer app instance named 'app'",
+                f'Warning: Module `{module_path}` does not have a Typer app instance named `app`',
                 err=True,
             )
             return None
     except ImportError as e:
-        typer.echo(f"Error: Could not import module '{module_path}': {e}", err=True)
+        typer.echo(f'Error: Could not import module `{module_path}`: {e}', err=True)
         return None
 
 
@@ -38,10 +39,25 @@ def create_app(module_paths: list[str]) -> typer.Typer:
     return app
 
 
-def main():
-    """Entry point for the invoke CLI."""
-    # For now, hardcode the modules to load (can be made configurable later)
-    module_paths = ['sample.hello']
+def main(module_paths: list[str] | None = None):
+    """Entry point for the invoke CLI.
+
+    Args:
+        module_paths: List of module paths to load. If None, reads from sys.argv.
+    """
+    if module_paths is None:
+        # Parse command line arguments
+        # sys.argv[0] is the script name, we need at least one module path
+        if len(sys.argv) < 2:
+            typer.echo('Error: No module paths specified', err=True)
+            typer.echo('Usage: python -m src <module_path> [command] [args...]', err=True)
+            typer.echo('Example: python -m src sample.hello world', err=True)
+            sys.exit(1)
+
+        # First argument is the module path, rest are passed to the app
+        module_paths = [sys.argv[1]]
+        # Remove the module path from sys.argv so Typer gets the remaining args
+        sys.argv = [sys.argv[0]] + sys.argv[2:]
 
     app = create_app(module_paths)
     app()

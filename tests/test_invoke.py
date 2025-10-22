@@ -63,7 +63,7 @@ class TestLoadModuleApp:
 
             assert result is None
             captured = capsys.readouterr()
-            assert "does not have a Typer app" in captured.err
+            assert 'does not have a Typer app' in captured.err
 
     def test_load_module_app_app_not_typer_instance(self, capsys):
         """Test loading a module where 'app' is not a Typer instance."""
@@ -75,7 +75,7 @@ class TestLoadModuleApp:
 
             assert result is None
             captured = capsys.readouterr()
-            assert "does not have a Typer app" in captured.err
+            assert 'does not have a Typer app' in captured.err
 
     def test_load_module_app_import_error(self, capsys):
         """Test handling ImportError when module cannot be imported."""
@@ -86,7 +86,7 @@ class TestLoadModuleApp:
 
             assert result is None
             captured = capsys.readouterr()
-            assert "Could not import module" in captured.err
+            assert 'Could not import module' in captured.err
             assert "nonexistent.module" in captured.err
 
     def test_load_module_app_module_not_found_error(self, capsys):
@@ -99,7 +99,7 @@ class TestLoadModuleApp:
 
             assert result is None
             captured = capsys.readouterr()
-            assert "Could not import module" in captured.err
+            assert 'Could not import module' in captured.err
 
 
 class TestCreateApp:
@@ -182,7 +182,7 @@ class TestMain:
         mock_app = Mock(spec=typer.Typer)
 
         with patch('src.invoke.create_app', return_value=mock_app) as mock_create:
-            main()
+            main(module_paths=['sample.hello'])
 
             # Verify create_app was called with correct module paths
             mock_create.assert_called_once_with(['sample.hello'])
@@ -191,15 +191,49 @@ class TestMain:
             mock_app.assert_called_once()
 
     def test_main_with_custom_module_paths(self):
-        """Test main function calls create_app correctly."""
+        """Test main function with custom module paths."""
         mock_app = Mock(spec=typer.Typer)
 
         with patch('src.invoke.create_app', return_value=mock_app) as mock_create:
-            main()
+            main(module_paths=['custom.module', 'another.module'])
 
-            # Verify create_app was called (we already test this in test_main_creates_and_runs_app)
-            assert mock_create.called
+            # Verify create_app was called with custom paths
+            mock_create.assert_called_once_with(['custom.module', 'another.module'])
             mock_app.assert_called_once()
+
+    def test_main_parses_cli_arguments(self):
+        """Test that main parses module path from CLI arguments."""
+        import sys as sys_module
+
+        mock_app = Mock(spec=typer.Typer)
+
+        # Store original sys.argv
+        original_argv = sys_module.argv[:]
+
+        try:
+            with patch('src.invoke.create_app', return_value=mock_app) as mock_create:
+                sys_module.argv = ['script.py', 'sample.hello', 'hello', 'world']
+                main()
+
+                # Should extract module path and modify sys.argv
+                mock_create.assert_called_once_with(['sample.hello'])
+                mock_app.assert_called_once()
+                # sys.argv should be modified to remove module path
+                assert sys_module.argv == ['script.py', 'hello', 'world']
+        finally:
+            # Restore original sys.argv
+            sys_module.argv = original_argv
+
+    def test_main_no_arguments_exits(self, capsys):
+        """Test that main exits with error when no arguments provided."""
+        with patch('sys.argv', ['script.py']):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+            assert exc_info.value.code == 1
+            captured = capsys.readouterr()
+            assert 'No module paths specified' in captured.err
+            assert 'Usage:' in captured.err
 
 
 class TestIntegration:
