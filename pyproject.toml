@@ -84,8 +84,8 @@ classifiers = [
 Home = 'https://github.com/joaonc/typer-invoke'
 
 [project.scripts]
-inv = 'invoke:main'
+inv = 'src.invoke:main'
 
 [tool.flit.module]
-name = 'typer_invoke'
-directory = 'src'
+name = 'src'
+directory = '.'
