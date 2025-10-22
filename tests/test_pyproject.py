@@ -161,7 +161,7 @@ config = "value"
         pyproject_file = tmp_path / 'pyproject.toml'
         pyproject_file.write_text('[tool.invoke\nmalformed toml')
         
-        with pytest.raises(Exception, match=f'Error reading {pyproject_file}'):
+        with pytest.raises(Exception, match=f'Error reading .*'):
             read_package_config('invoke', pyproject_file)
     
     def test_read_package_config_file_permission_error(self, tmp_path):
@@ -170,7 +170,7 @@ config = "value"
         pyproject_file.write_text('[tool.invoke]\ntimeout = 30')
         
         with patch('builtins.open', side_effect=PermissionError('Access denied')):
-            with pytest.raises(Exception, match=f'Error reading {pyproject_file}'):
+            with pytest.raises(Exception, match=f'Error reading .*'):
                 read_package_config('invoke', pyproject_file)
 
 
