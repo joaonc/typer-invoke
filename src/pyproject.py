@@ -34,7 +34,9 @@ def find_pyproject_toml(start_path: str | Path | None = None) -> Path:
     raise FileNotFoundError('pyproject.toml not found.')
 
 
-def read_package_config(package_name: str, pyproject_path: str | Path | None = None) -> Dict[str, Any]:
+def read_package_config(
+    package_name: str, pyproject_path: str | Path | None = None
+) -> Dict[str, Any]:
     """
     Read package configuration from pyproject.toml.
 
