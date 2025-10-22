@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict
 
 # Import the appropriate TOML library
 if sys.version_info >= (3, 11):

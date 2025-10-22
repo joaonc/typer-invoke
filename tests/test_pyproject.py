@@ -1,5 +1,6 @@
 import sys
 from unittest.mock import patch
+
 import pytest
 
 # Import the appropriate TOML library for testing
@@ -12,10 +13,10 @@ else:
         pytest.skip('tomli not available', allow_module_level=True)
 
 from src.pyproject import (
-    find_pyproject_toml,
-    read_package_config,
-    get_package_setting,
     PackageConfig,
+    find_pyproject_toml,
+    get_package_setting,
+    read_package_config,
 )
 
 

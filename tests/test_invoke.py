@@ -1,10 +1,10 @@
-import sys
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
+
 import pytest
 import typer
 from typer.testing import CliRunner
 
-from src.invoke import load_module_app, create_app, main
+from src.invoke import create_app, load_module_app, main
 
 
 @pytest.fixture
@@ -80,7 +80,7 @@ class TestLoadModuleApp:
     def test_load_module_app_import_error(self, capsys):
         """Test handling ImportError when module cannot be imported."""
         with patch(
-            'src.invoke.importlib.import_module', side_effect=ImportError("Module not found")
+            'src.invoke.importlib.import_module', side_effect=ImportError('Module not found')
         ):
             result = load_module_app('nonexistent.module')
 
@@ -263,13 +263,13 @@ class TestErrorHandling:
 
     def test_load_module_app_with_syntax_error(self):
         """Test handling module with syntax error."""
-        with patch('src.invoke.importlib.import_module', side_effect=SyntaxError("Invalid syntax")):
+        with patch('src.invoke.importlib.import_module', side_effect=SyntaxError('Invalid syntax')):
             with pytest.raises(SyntaxError):
                 load_module_app('sample.broken')
 
     def test_load_module_app_handles_runtime_error(self, capsys):
         """Test handling RuntimeError during module loading."""
-        with patch('src.invoke.importlib.import_module', side_effect=RuntimeError("Runtime issue")):
+        with patch('src.invoke.importlib.import_module', side_effect=RuntimeError('Runtime issue')):
             # RuntimeError is not caught by ImportError, so it should propagate
             with pytest.raises(RuntimeError):
                 load_module_app('sample.problematic')
@@ -288,13 +288,13 @@ class TestModuleNameExtraction:
     """Test module name extraction logic."""
 
     @pytest.mark.parametrize(
-        "module_path,expected_name",
+        'module_path, expected_name',
         [
-            ("sample.hello", "hello"),
-            ("foo.bar.baz", "baz"),
-            ("single", "single"),
-            ("a.b.c.d.e", "e"),
-            ("my_package.my_module", "my_module"),
+            ('sample.hello', 'hello'),
+            ('foo.bar.baz', 'baz'),
+            ('single', 'single'),
+            ('a.b.c.d.e', 'e'),
+            ('my_package.my_module', 'my_module'),
         ],
     )
     def test_module_name_extraction(self, module_path, expected_name, mock_typer_app):
