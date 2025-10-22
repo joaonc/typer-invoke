@@ -13,7 +13,7 @@ else:
 
 from src.pyproject import (
     find_pyproject_toml,
-    read_invoke_config,
+    read_package_config,
     get_invoke_setting,
     PackageConfig
 )
@@ -25,7 +25,7 @@ class TestFindPyprojectToml:
     def test_find_pyproject_toml_in_current_directory(self, tmp_path):
         """Test finding pyproject.toml in current directory."""
         pyproject_file = tmp_path / 'pyproject.toml'
-        pyproject_file.write_text('[tool.invoke]\ntimeout = 30')
+        pyproject_file.write_text('[tool.foo]\ntimeout = 30')
         
         result = find_pyproject_toml(tmp_path)
         assert result == pyproject_file
@@ -33,7 +33,7 @@ class TestFindPyprojectToml:
     def test_find_pyproject_toml_in_parent_directory(self, tmp_path):
         """Test finding pyproject.toml in parent directory."""
         pyproject_file = tmp_path / 'pyproject.toml'
-        pyproject_file.write_text('[tool.invoke]\ntimeout = 30')
+        pyproject_file.write_text('[tool.foo]\ntimeout = 30')
         
         subdir = tmp_path / 'subdir'
         subdir.mkdir()
@@ -44,7 +44,7 @@ class TestFindPyprojectToml:
     def test_find_pyproject_toml_multiple_levels(self, tmp_path):
         """Test finding pyproject.toml multiple levels up."""
         pyproject_file = tmp_path / 'pyproject.toml'
-        pyproject_file.write_text('[tool.invoke]\ntimeout = 30')
+        pyproject_file.write_text('[tool.foo]\ntimeout = 30')
         
         deep_subdir = tmp_path / 'level1' / 'level2' / 'level3'
         deep_subdir.mkdir(parents=True)
@@ -86,10 +86,10 @@ class TestFindPyprojectToml:
 
 
 class TestReadInvokeConfig:
-    """Test read_invoke_config function."""
+    """Test read_package_config function."""
     
-    def test_read_invoke_config_with_path(self, tmp_path):
-        """Test reading invoke config with explicit path."""
+    def test_read_package_config_with_path(self, tmp_path):
+        """Test reading package config with explicit path."""
         pyproject_file = tmp_path / 'pyproject.toml'
         content = """[tool.invoke]
 timeout = 30
@@ -98,7 +98,7 @@ tasks_dir = "custom_tasks"
 """
         pyproject_file.write_text(content)
         
-        result = read_invoke_config(pyproject_file)
+        result = read_package_config(pyproject_file)
         expected = {
             'timeout': 30,
             'debug': True,
@@ -106,8 +106,8 @@ tasks_dir = "custom_tasks"
         }
         assert result == expected
     
-    def test_read_invoke_config_without_path(self, tmp_path):
-        """Test reading invoke config without explicit path (auto-discovery)."""
+    def test_read_package_config_without_path(self, tmp_path):
+        """Test reading package config without explicit path (auto-discovery)."""
         pyproject_file = tmp_path / 'pyproject.toml'
         content = """[tool.invoke]
 timeout = 60
@@ -115,10 +115,10 @@ timeout = 60
         pyproject_file.write_text(content)
         
         with patch('src.pyproject.find_pyproject_toml', return_value=pyproject_file):
-            result = read_invoke_config()
+            result = read_package_config()
             assert result == {'timeout': 60}
     
-    def test_read_invoke_config_no_tool_section(self, tmp_path):
+    def test_read_package_config_no_tool_section(self, tmp_path):
         """Test reading config with no [tool] section."""
         pyproject_file = tmp_path / 'pyproject.toml'
         content = """[project]
@@ -126,10 +126,10 @@ name = "test"
 """
         pyproject_file.write_text(content)
         
-        result = read_invoke_config(pyproject_file)
+        result = read_package_config(pyproject_file)
         assert result == {}
     
-    def test_read_invoke_config_no_invoke_section(self, tmp_path):
+    def test_read_package_config_no_invoke_section(self, tmp_path):
         """Test reading config with [tool] but no [tool.invoke] section."""
         pyproject_file = tmp_path / 'pyproject.toml'
         content = """[tool.other]
@@ -137,41 +137,41 @@ config = "value"
 """
         pyproject_file.write_text(content)
         
-        result = read_invoke_config(pyproject_file)
+        result = read_package_config(pyproject_file)
         assert result == {}
     
-    def test_read_invoke_config_empty_invoke_section(self, tmp_path):
+    def test_read_package_config_empty_invoke_section(self, tmp_path):
         """Test reading config with empty [tool.invoke] section."""
         pyproject_file = tmp_path / 'pyproject.toml'
         content = """[tool.invoke]
 """
         pyproject_file.write_text(content)
         
-        result = read_invoke_config(pyproject_file)
+        result = read_package_config(pyproject_file)
         assert result == {}
     
-    def test_read_invoke_config_file_not_found_auto_discovery(self):
+    def test_read_package_config_file_not_found_auto_discovery(self):
         """Test FileNotFoundError when auto-discovery fails."""
         with patch('src.pyproject.find_pyproject_toml', side_effect=FileNotFoundError()):
             with pytest.raises(FileNotFoundError):
-                read_invoke_config()
+                read_package_config()
     
-    def test_read_invoke_config_malformed_toml(self, tmp_path):
+    def test_read_package_config_malformed_toml(self, tmp_path):
         """Test handling malformed TOML."""
         pyproject_file = tmp_path / 'pyproject.toml'
         pyproject_file.write_text('[tool.invoke\nmalformed toml')
         
         with pytest.raises(Exception, match=f'Error reading {pyproject_file}'):
-            read_invoke_config(pyproject_file)
+            read_package_config(pyproject_file)
     
-    def test_read_invoke_config_file_permission_error(self, tmp_path):
+    def test_read_package_config_file_permission_error(self, tmp_path):
         """Test handling file permission errors."""
         pyproject_file = tmp_path / 'pyproject.toml'
         pyproject_file.write_text('[tool.invoke]\ntimeout = 30')
         
         with patch('builtins.open', side_effect=PermissionError('Access denied')):
             with pytest.raises(Exception, match=f'Error reading {pyproject_file}'):
-                read_invoke_config(pyproject_file)
+                read_package_config(pyproject_file)
 
 
 class TestGetInvokeSetting:
@@ -215,19 +215,19 @@ timeout = 45
     
     def test_get_invoke_setting_file_not_found_returns_default(self):
         """Test returning default when file is not found."""
-        with patch('src.pyproject.read_invoke_config', side_effect=FileNotFoundError()):
+        with patch('src.pyproject.read_package_config', side_effect=FileNotFoundError()):
             result = get_invoke_setting('timeout', default=300)
             assert result == 300
     
     def test_get_invoke_setting_exception_returns_default(self, tmp_path):
         """Test returning default when exception occurs."""
-        with patch('src.pyproject.read_invoke_config', side_effect=Exception('Some error')):
+        with patch('src.pyproject.read_package_config', side_effect=Exception('Some error')):
             result = get_invoke_setting('timeout', default=120)
             assert result == 120
     
     def test_get_invoke_setting_none_default(self, tmp_path):
         """Test that None default is returned properly."""
-        with patch('src.pyproject.read_invoke_config', side_effect=FileNotFoundError()):
+        with patch('src.pyproject.read_package_config', side_effect=FileNotFoundError()):
             result = get_invoke_setting('timeout')
             assert result is None
 
@@ -299,7 +299,7 @@ timeout = 60
     
     def test_package_config_file_not_found(self):
         """Test behavior when pyproject.toml is not found."""
-        with patch('src.pyproject.read_invoke_config', side_effect=FileNotFoundError()):
+        with patch('src.pyproject.read_package_config', side_effect=FileNotFoundError()):
             config = PackageConfig('test_package')
             
             # Should return empty dict when file not found
@@ -308,7 +308,7 @@ timeout = 60
     
     def test_package_config_exception_handling(self):
         """Test behavior when exception occurs during config loading."""
-        with patch('src.pyproject.read_invoke_config', side_effect=Exception('Some error')):
+        with patch('src.pyproject.read_package_config', side_effect=Exception('Some error')):
             config = PackageConfig('test_package')
             
             # Should return empty dict when exception occurs

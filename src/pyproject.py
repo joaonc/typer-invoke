@@ -16,11 +16,11 @@ else:
 
 def find_pyproject_toml(start_path: Optional[Path] = None) -> Path:
     """
-    Find pyproject.toml by walking up the directory tree from start_path.
+    Find ``pyproject.toml`` by walking up the directory tree from start_path.
 
     :param start_path: Directory to start searching from. Defaults to current working directory.
     :returns: Path to ``pyproject.toml``.
-    :raises FileNotFoundError: If pyproject.toml is not found.
+    :raises FileNotFoundError: If ``pyproject.toml`` is not found.
     """
     if start_path is None:
         start_path = Path.cwd()
@@ -36,15 +36,15 @@ def find_pyproject_toml(start_path: Optional[Path] = None) -> Path:
     raise FileNotFoundError('pyproject.toml not found.')
 
 
-def read_invoke_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]:
+def read_package_config(pyproject_path: Optional[Path] = None) -> Dict[str, Any]:
     """
     Read invoke configuration from pyproject.toml.
 
     :param pyproject_path: Path to pyproject.toml. If None, searches for it automatically.
     :returns: Dictionary containing invoke configuration, empty dict if not found.
 
-    :raises FileNotFoundError: If pyproject.toml is not found.
-    :raises tomllib.TOMLDecodeError: If pyproject.toml is malformed.
+    :raises FileNotFoundError: If ``pyproject.toml`` is not found.
+    :raises tomllib.TOMLDecodeError: If ``pyproject.toml`` is malformed.
     """
     if pyproject_path is None:
         pyproject_path = find_pyproject_toml()
@@ -74,7 +74,7 @@ def get_invoke_setting(key: str, default: Any = None, pyproject_path: Optional[P
     :returns: The configuration value or default
     """
     try:
-        config = read_invoke_config(pyproject_path)
+        config = read_package_config(pyproject_path)
         return config.get(key, default)
     except (FileNotFoundError, Exception):
         return default
@@ -90,9 +90,10 @@ class PackageConfig:
         """
         Initialize PackageConfig.
 
-        :param package: Name of the package.
+        :param package: Name of the package. Will be used to find the section in ``pyproject.toml``.
         :param pyproject_path: Path to ``pyproject.toml``
         """
+        self.package = package
         self.pyproject_path = pyproject_path
         self._config = None
 
@@ -105,7 +106,7 @@ class PackageConfig:
         """
         if self._config is None:
             try:
-                self._config = read_invoke_config(self.pyproject_path)
+                self._config = read_package_config(self.pyproject_path)
             except (FileNotFoundError, Exception):
                 self._config = {}
         return self._config
@@ -131,7 +132,7 @@ class PackageConfig:
 if __name__ == '__main__':
     # Method 1: Direct function calls
     try:
-        config = read_invoke_config()
+        config = read_package_config()
         print('Invoke configuration:', config)
 
         # Get specific settings
@@ -142,7 +143,7 @@ if __name__ == '__main__':
         print(f'Debug mode: {debug_mode}')
 
     except FileNotFoundError:
-        print('No pyproject.toml found')
+        print('No ``pyproject.toml`` found')
     except Exception as e:
         print(f'Error: {e}')
 
