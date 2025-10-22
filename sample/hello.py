@@ -20,5 +20,5 @@ def different_name(name: Annotated[str, typer.Argument()]):
     print(f'hello {name}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app()
