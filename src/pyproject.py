@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict
 
 # Import the appropriate TOML library
 if sys.version_info >= (3, 11):
@@ -34,7 +34,9 @@ def find_pyproject_toml(start_path: str | Path | None = None) -> Path:
     raise FileNotFoundError('pyproject.toml not found.')
 
 
-def read_package_config(package_name: str, pyproject_path: str | Path | None = None) -> Dict[str, Any]:
+def read_package_config(
+    package_name: str, pyproject_path: str | Path | None = None
+) -> Dict[str, Any]:
     """
     Read package configuration from pyproject.toml.
 
