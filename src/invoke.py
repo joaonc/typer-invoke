@@ -39,7 +39,8 @@ def create_app(module_paths: list[str]) -> typer.Typer:
 
 
 def main():
-    """Entry point for the invoke CLI.
+    """
+    Entry point for the invoke CLI.
 
     Retrieves modules to import from ``pyproject.toml`` and creates a main Typer app.
     """

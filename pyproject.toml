@@ -66,7 +66,7 @@ build-backend = 'flit_core.buildapi'
 [project]
 name = 'typer-invoke'
 version = '0.0.1'
-description = 'Simplified invokation of typer apps.'
+description = 'Simplified invokation of typer apps from any directory.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
 license = {file = 'LICENSE.txt'}
@@ -83,5 +83,9 @@ classifiers = [
 [project.urls]
 Home = 'https://github.com/joaonc/typer-invoke'
 
+[project.scripts]
+inv = 'invoke:main'
+
 [tool.flit.module]
 name = 'typer_invoke'
+directory = 'src'
