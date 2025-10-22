@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, cast
 
 # Import the appropriate TOML library
 if sys.version_info >= (3, 11):
@@ -36,7 +36,7 @@ def find_pyproject_toml(start_path: str | Path | None = None) -> Path:
 
 def read_package_config(
     package_name: str, pyproject_path: str | Path | None = None
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Read package configuration from pyproject.toml.
 
@@ -60,7 +60,7 @@ def read_package_config(
             data = tomllib.load(f)
 
         # Extract package-specific configuration.
-        return data.get('tool', {}).get(package_name, {})
+        return cast(dict[str, Any], data.get('tool', {}).get(package_name, {}))
 
     except Exception as e:
         raise Exception(f'Error reading {pyproject_path}: {e}')
@@ -103,10 +103,10 @@ class PackageConfig:
         """
         self.package = package
         self.pyproject_path = pyproject_path
-        self._config = None
+        self._config: dict[str, Any] | None = None
 
     @property
-    def config(self) -> Dict[str, Any]:
+    def config(self) -> dict[str, Any]:
         """
         Lazy-load configuration.
 
