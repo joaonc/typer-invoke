@@ -55,8 +55,9 @@ exclude = [
 ]
 
 [tool.typer-invoke]
+# Paths from where `pyproject.toml` is located (root of project)
 modules = [
-    '.admin.build',
+    'admin.build',
     'sample.hello'
 ]
 
