@@ -3,6 +3,35 @@ import importlib
 import typer
 
 
+def get_modules(full_path: bool = True) -> list[str]:
+    from .pyproject import find_pyproject_toml, read_package_config
+
+    section_name = 'typer-invoke'
+    key = 'modules'
+    invoke_config = read_package_config(section_name)
+    if not invoke_config:
+        typer.echo(
+            f'Error: Could not read invoke configuration from `pyproject.toml`, '
+            f'in section `{section_name}`',
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    if key not in invoke_config:
+        typer.echo(
+            f'Error: Could not find `{key}` key in invoke configuration from `pyproject.toml`, '
+            f'in section `{section_name}`',
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    modules = invoke_config['modules']
+    if full_path:
+        pyproject_path = find_pyproject_toml().parent
+        modules = [str(pyproject_path / module) for module in modules]
+
+    return modules
+
+
 def load_module_app(module_path: str) -> typer.Typer | None:
     """Load a Typer app from a module path like 'sample.hello'."""
     try:
@@ -44,27 +73,7 @@ def main():
 
     Retrieves modules to import from ``pyproject.toml`` and creates a main Typer app.
     """
-    from .pyproject import read_package_config
-
-    section_name = 'typer-invoke'
-    key = 'modules'
-    invoke_config = read_package_config(section_name)
-    if not invoke_config:
-        typer.echo(
-            f'Error: Could not read invoke configuration from `pyproject.toml`, '
-            f'in section `{section_name}`',
-            err=True,
-        )
-        raise typer.Exit(code=1)
-    if key not in invoke_config:
-        typer.echo(
-            f'Error: Could not find `{key}` key in invoke configuration from `pyproject.toml`, '
-            f'in section `{section_name}`',
-            err=True,
-        )
-        raise typer.Exit(code=1)
-
-    app = create_app(invoke_config['modules'])
+    app = create_app(get_modules())
     app()
 
 
