@@ -3,8 +3,8 @@ import importlib
 import typer
 
 
-def get_modules(full_path: bool = True) -> list[str]:
-    from .pyproject import find_pyproject_toml, read_package_config
+def get_modules() -> list[str]:
+    from .pyproject import read_package_config
 
     section_name = 'typer-invoke'
     key = 'modules'
@@ -24,12 +24,7 @@ def get_modules(full_path: bool = True) -> list[str]:
         )
         raise typer.Exit(code=1)
 
-    modules = invoke_config['modules']
-    if full_path:
-        pyproject_path = find_pyproject_toml().parent
-        modules = [str(pyproject_path / module) for module in modules]
-
-    return modules
+    return invoke_config['modules']  # type: ignore
 
 
 def load_module_app(module_path: str) -> typer.Typer | None:
