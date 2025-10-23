@@ -27,9 +27,15 @@ def get_modules() -> list[str]:
     return invoke_config['modules']  # type: ignore
 
 
-def load_module_app(module_path: str) -> typer.Typer | None:
+def load_module_app(module_path: str, base_path: str) -> typer.Typer | None:
     """Load a Typer app from a module path like 'sample.hello'."""
+    import sys
+
     try:
+        # Add base_path to sys.path if not already present
+        if base_path not in sys.path:
+            sys.path.insert(0, base_path)
+
         module = importlib.import_module(module_path)
         if hasattr(module, 'app') and isinstance(module.app, typer.Typer):
             return module.app
@@ -46,14 +52,17 @@ def load_module_app(module_path: str) -> typer.Typer | None:
 
 def create_app(module_paths: list[str]) -> typer.Typer:
     """Create a main Typer app with subcommands from specified modules."""
+    from .pyproject import find_pyproject_toml
+
     app = typer.Typer()
 
+    base_path = str(find_pyproject_toml().parent)
     for module_path in module_paths:
         # Extract the module name (last part of the path) to use as subcommand name.
         module_name = module_path.split('.')[-1]
 
         # Load the module's Typer app
-        module_app = load_module_app(module_path)
+        module_app = load_module_app(module_path, base_path)
 
         if module_app:
             # Add the module's app as a subcommand group
