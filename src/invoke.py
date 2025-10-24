@@ -3,28 +3,39 @@ import importlib
 import typer
 
 
-def get_modules() -> list[str]:
+def get_config() -> dict:
+    """Retrieve config from ``pyproject.toml``."""
     from .pyproject import read_package_config
 
     section_name = 'typer-invoke'
     key = 'modules'
-    invoke_config = read_package_config(section_name)
-    if not invoke_config:
+
+    try:
+        config = read_package_config(section_name)
+    except Exception as e:
         typer.echo(
-            f'Error: Could not read invoke configuration from `pyproject.toml`, '
-            f'in section `{section_name}`',
-            err=True,
-        )
-        raise typer.Exit(code=1)
-    if key not in invoke_config:
-        typer.echo(
-            f'Error: Could not find `{key}` key in invoke configuration from `pyproject.toml`, '
-            f'in section `{section_name}`',
+            f'Error: Could not read invoke configuration from `pyproject.toml`. '
+            f'{type(e).__name__}: {e}',
             err=True,
         )
         raise typer.Exit(code=1)
 
-    return invoke_config['modules']  # type: ignore
+    if not config:
+        typer.echo(
+            f'Error: Could not read invoke configuration from `pyproject.toml`, '
+            f'in section `{section_name}`.',
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    if key not in config:
+        typer.echo(
+            f'Error: Could not find `{key}` key in invoke configuration from `pyproject.toml`, '
+            f'in section `{section_name}`.',
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    return config
 
 
 def load_module_app(module_path: str, base_path: str) -> typer.Typer | None:
@@ -50,11 +61,11 @@ def load_module_app(module_path: str, base_path: str) -> typer.Typer | None:
         return None
 
 
-def create_app(module_paths: list[str]) -> typer.Typer:
+def create_app(module_paths: list[str], **typer_kwargs) -> typer.Typer:
     """Create a main Typer app with subcommands from specified modules."""
     from .pyproject import find_pyproject_toml
 
-    app = typer.Typer()
+    app = typer.Typer(**typer_kwargs)
 
     base_path = str(find_pyproject_toml().parent)
     for module_path in module_paths:
@@ -77,7 +88,8 @@ def main():
 
     Retrieves modules to import from ``pyproject.toml`` and creates a main Typer app.
     """
-    app = create_app(get_modules())
+    config = get_config()
+    app = create_app(module_paths=config['modules'])
     app()
 
 

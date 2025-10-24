@@ -15,16 +15,8 @@ sections = 'FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER'
 skip_glob = ['**/.venv*', '**/venv*', '/build']
 
 [tool.pytest.ini_options]
-python_files = ['tests.py', 'test_*.py', '*_tests.py']
-python_classes = ['Test*']
-python_functions = ['test_*']
 testpaths = ['tests']
 addopts = ['--strict-markers', '-v']
-markers = [
-  'unit: Unit tests',
-  'integration: Integration tests',
-  'slow: Slow running tests',
-]
 
 [tool.mypy]
 python_version = '3.12'
@@ -58,8 +50,14 @@ exclude = [
 # Paths from where `pyproject.toml` is located (root of project)
 modules = [
     'admin.build',
+    'admin.pip',
     'sample.hello'
 ]
+no_args_is_help = true
+add_completion = false
+rich_markup_mode = 'markdown'
+logging_level = 'INFO'
+logging_format = '%(message)s'
 
 [build-system]
 requires = ['flit_core >=3.2,<4']
@@ -67,12 +65,17 @@ build-backend = 'flit_core.buildapi'
 
 [project]
 name = 'typer-invoke'
-version = '0.0.1'
+version = '0.0.2'
 description = 'Simplified invokation of typer apps from any directory.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
 license = {file = 'LICENSE.txt'}
-dependencies = ['pytest>=7.0.0']
+requires-python = '>=3.9'
+# Keep dependencies synced with `requirements.in`
+dependencies = [
+    'typer',
+    'tomli;python_version<="3.10"'
+]
 # https://pypi.org/pypi?%3Aaction=list_classifiers
 classifiers = [
     'License :: OSI Approved :: MIT License',
