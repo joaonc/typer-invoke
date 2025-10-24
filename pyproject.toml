@@ -67,12 +67,17 @@ build-backend = 'flit_core.buildapi'
 
 [project]
 name = 'typer-invoke'
-version = '0.0.1'
+version = '0.0.2'
 description = 'Simplified invokation of typer apps from any directory.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
 license = {file = 'LICENSE.txt'}
-dependencies = ['pytest>=7.0.0']
+requires-python = '>=3.9'
+# Keep dependencies synced with `requirements.in`
+dependencies = [
+    'typer',
+    'tomli;python_version<="3.10"'
+]
 # https://pypi.org/pypi?%3Aaction=list_classifiers
 classifiers = [
     'License :: OSI Approved :: MIT License',
