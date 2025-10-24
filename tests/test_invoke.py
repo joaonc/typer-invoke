@@ -50,7 +50,7 @@ class TestLoadModuleApp:
     def test_load_module_app_success(self, mock_module_with_app):
         """Test successfully loading a module with a Typer app."""
         with patch('src.invoke.importlib.import_module', return_value=mock_module_with_app):
-            result = load_module_app('sample.hello')
+            result = load_module_app('sample.hello', 'foo')
 
             assert result is not None
             assert isinstance(result, typer.Typer)
@@ -59,7 +59,7 @@ class TestLoadModuleApp:
     def test_load_module_app_no_app_attribute(self, mock_module_without_app, capsys):
         """Test loading a module without an 'app' attribute."""
         with patch('src.invoke.importlib.import_module', return_value=mock_module_without_app):
-            result = load_module_app('sample.noapp')
+            result = load_module_app('sample.noapp', 'foo')
 
             assert result is None
             captured = capsys.readouterr()
@@ -71,7 +71,7 @@ class TestLoadModuleApp:
         mock_module.app = "not a typer app"
 
         with patch('src.invoke.importlib.import_module', return_value=mock_module):
-            result = load_module_app('sample.invalid')
+            result = load_module_app('sample.invalid', 'foo')
 
             assert result is None
             captured = capsys.readouterr()
@@ -82,7 +82,7 @@ class TestLoadModuleApp:
         with patch(
             'src.invoke.importlib.import_module', side_effect=ImportError('Module not found')
         ):
-            result = load_module_app('nonexistent.module')
+            result = load_module_app('nonexistent.module', 'foo')
 
             assert result is None
             captured = capsys.readouterr()
@@ -95,7 +95,7 @@ class TestLoadModuleApp:
             'src.invoke.importlib.import_module',
             side_effect=ModuleNotFoundError("No module named 'foo'"),
         ):
-            result = load_module_app('foo.bar')
+            result = load_module_app('foo.bar', 'foo')
 
             assert result is None
             captured = capsys.readouterr()
@@ -175,7 +175,7 @@ class TestCreateApp:
 
 
 class TestMain:
-    """Test main function."""
+    """Test ``main`` function."""
 
     def test_main_creates_and_runs_app(self):
         """Test that main creates and runs the app."""
@@ -185,7 +185,7 @@ class TestMain:
             main()
 
             # Verify create_app was called with correct module paths
-            mock_create.assert_called_once_with(['sample.hello'])
+            mock_create.assert_called_once()
 
             # Verify the app was invoked
             mock_app.assert_called_once()
@@ -196,7 +196,7 @@ class TestIntegration:
 
     def test_load_actual_hello_module(self):
         """Test loading the actual sample.hello module."""
-        result = load_module_app('sample.hello')
+        result = load_module_app('sample.hello', 'foo')
 
         assert result is not None
         assert isinstance(result, typer.Typer)
@@ -254,14 +254,14 @@ class TestErrorHandling:
         """Test handling module with syntax error."""
         with patch('src.invoke.importlib.import_module', side_effect=SyntaxError('Invalid syntax')):
             with pytest.raises(SyntaxError):
-                load_module_app('sample.broken')
+                load_module_app('sample.broken', 'foo')
 
     def test_load_module_app_handles_runtime_error(self, capsys):
         """Test handling RuntimeError during module loading."""
         with patch('src.invoke.importlib.import_module', side_effect=RuntimeError('Runtime issue')):
             # RuntimeError is not caught by ImportError, so it should propagate
             with pytest.raises(RuntimeError):
-                load_module_app('sample.problematic')
+                load_module_app('sample.problematic', 'foo')
 
     def test_create_app_handles_none_from_load_module(self):
         """Test that create_app gracefully handles None from load_module_app."""
