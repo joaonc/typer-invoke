@@ -160,7 +160,8 @@ class TestCreateApp:
             app = create_app(['foo.bar.baz'])
 
             # Verify the module was loaded
-            mock_load.assert_called_once_with('foo.bar.baz')
+            mock_load.assert_called_once()
+            assert mock_load.call_args.args[0] == 'foo.bar.baz'
 
             # The subcommand name should be 'baz' (last part of the path)
             assert isinstance(app, typer.Typer)

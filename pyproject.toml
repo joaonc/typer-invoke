@@ -15,16 +15,8 @@ sections = 'FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER'
 skip_glob = ['**/.venv*', '**/venv*', '/build']
 
 [tool.pytest.ini_options]
-python_files = ['tests.py', 'test_*.py', '*_tests.py']
-python_classes = ['Test*']
-python_functions = ['test_*']
 testpaths = ['tests']
 addopts = ['--strict-markers', '-v']
-markers = [
-  'unit: Unit tests',
-  'integration: Integration tests',
-  'slow: Slow running tests',
-]
 
 [tool.mypy]
 python_version = '3.12'
