@@ -119,7 +119,7 @@ class TestCreateApp:
         mock_app1 = typer.Typer()
         mock_app2 = typer.Typer()
 
-        def load_side_effect(module_path):
+        def load_side_effect(module_path, base_path):
             if module_path == 'sample.hello':
                 return mock_app1
             elif module_path == 'sample.world':
@@ -135,7 +135,7 @@ class TestCreateApp:
     def test_create_app_with_failed_module_load(self, mock_typer_app):
         """Test creating app when one module fails to load."""
 
-        def load_side_effect(module_path):
+        def load_side_effect(module_path, base_path):
             if module_path == 'sample.hello':
                 return mock_typer_app
             return None

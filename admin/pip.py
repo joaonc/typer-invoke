@@ -5,7 +5,7 @@ Python packages related tasks.
 import logging
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, TypeAlias
+from typing import Annotated
 
 import typer
 
@@ -48,7 +48,7 @@ REQUIREMENTS_TASK_HELP = {
     f'Available requirements: {", ".join(Requirements)}.'
 }
 
-RequirementsAnnotation: TypeAlias = Annotated[
+RequirementsAnnotation = Annotated[
     list[str] | None,
     typer.Argument(
         help='Requirement file(s) to compile. If not set, all files are compiled.\nValues can be '

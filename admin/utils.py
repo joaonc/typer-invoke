@@ -2,14 +2,14 @@ import logging
 import subprocess
 import sys
 from enum import Enum
-from typing import Annotated, TypeAlias
+from typing import Annotated
 
 import typer
 
 logger = logging.getLogger(__name__)
 
 
-DryAnnotation: TypeAlias = Annotated[
+DryAnnotation = Annotated[
     bool,
     typer.Option(
         help='Show the command that would be run without running it.',
