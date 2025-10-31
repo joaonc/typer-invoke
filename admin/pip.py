@@ -9,7 +9,7 @@ from typing import Annotated
 
 import typer
 
-from admin.utils import DryAnnotation, run
+from admin.utils import DryAnnotation, install_package, run
 
 from . import PROJECT_ROOT
 
@@ -106,6 +106,8 @@ def pip_compile(
     """
     Compile requirements file(s).
     """
+    install_package('pip-tools', dry=dry)
+
     if clean and not dry:
         for filename in _get_requirements_files(requirements, RequirementsType.OUT):
             filename.unlink(missing_ok=True)
@@ -120,6 +122,7 @@ def pip_sync(requirements: RequirementsAnnotation = None, dry: DryAnnotation = F
     """
     Synchronize environment with requirements file.
     """
+    install_package('pip-tools', dry=dry)
     run(dry, 'pip-sync', *_get_requirements_files(requirements, RequirementsType.OUT))
 
 
@@ -134,6 +137,8 @@ def pip_package(
     """
     Upgrade one or more packages.
     """
+    install_package('pip-tools', dry=dry)
+
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(
             dry, 'pip-compile', '--upgrade-package', *' --upgrade-package '.join(packages), filename
@@ -150,6 +155,8 @@ def pip_upgrade(requirements, dry: DryAnnotation = False):
     Use ``package`` to only upgrade individual packages,
     Ex ``pip package dev mypy flake8``.
     """
+    install_package('pip-tools', dry=dry)
+
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(dry, ['pip-compile', '--upgrade', filename])
 

@@ -51,3 +51,19 @@ def run(dry: bool, *args) -> subprocess.CompletedProcess | None:
     except subprocess.CalledProcessError as e:
         logger.error(e)
         raise typer.Exit(1)
+
+
+def is_package_installed(package_name: str) -> bool:
+    """Check if a Python package is installed."""
+    import importlib.util
+
+    return importlib.util.find_spec(package_name) is not None
+
+
+def install_package(package: str, dry: bool = False):
+    """Install a Python package if not already installed."""
+    if is_package_installed(package):
+        logger.debug(f'Package `{package}` is already installed.')
+        return
+
+    run(dry, sys.executable, '-m', 'pip', 'install', package)
