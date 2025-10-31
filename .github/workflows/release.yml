@@ -4,7 +4,7 @@
 #
 # 1. Bump version.
 #    This creates a new PR and merges it.
-# 2. Create release in GitHub.
+# 2. Create a release in GitHub.
 # 3. Publish to Pypi.
 #
 # At this point, does not add assets to the release.

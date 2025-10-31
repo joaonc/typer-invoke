@@ -66,7 +66,7 @@ pytest
 black .
 isort .
 mypy .
-flake8
+flake8 .
 ```
 
 ### Build
@@ -76,7 +76,7 @@ Uses the `admin.build` module via the `inv` command.
 
 - **Entry point**: `inv` script points to `src.invoke:main`
 - **Module discovery**: Reads `pyproject.toml` to find registered Typer apps
-- **Rich output**: Leverages Rich library for enhanced terminal output
+- **Rich output**: Leverages the `rich` library for enhanced terminal output
 - **Markdown support**: Help text can use Markdown formatting
 
 ## Design Philosophy
@@ -88,7 +88,7 @@ Uses the `admin.build` module via the `inv` command.
 
 ## When Making Changes
 
-1. Follow Black/isort formatting (configs in `pyproject.toml`)
+1. Follow black/isort formatting (configs in `pyproject.toml`)
 2. Run type checking with mypy
 3. Add tests in `tests/` directory
 4. Update README.md if user-facing changes
