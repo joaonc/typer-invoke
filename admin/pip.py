@@ -79,7 +79,7 @@ def _get_requirements_file(
     else:
         reqs_type = RequirementsType(requirements_type.lstrip('.').lower())
 
-    base_path = PROJECT_ROOT / 'admin'
+    base_path = PROJECT_ROOT / 'admin' / 'requirements'
     return base_path / f'{reqs}.{reqs_type}'
 
 
