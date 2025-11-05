@@ -6,7 +6,6 @@ This example demonstrates custom formatting, different log levels, and Rich mark
 import logging
 
 from rich.console import Console
-from rich.highlighter import ReprHighlighter
 from rich.logging import RichHandler
 
 # Install rich traceback handler for better error display

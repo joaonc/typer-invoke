@@ -1,4 +1,5 @@
 import importlib
+import sys
 
 import typer
 
@@ -15,25 +16,22 @@ def get_config() -> dict:
     try:
         config = read_package_config(section_name)
     except Exception as e:
-        logger.error(
+        raise ValueError(
             f'Could not read invoke configuration from [b]pyproject.toml[/b]. '
             f'{type(e).__name__}: {e}'
         )
-        raise typer.Exit(code=1)
 
     if not config:
-        logger.error(
+        raise ValueError(
             f'Could not read invoke configuration from [b]pyproject.toml[/b], '
             f'in section [b]{section_name}[/b].',
         )
-        raise typer.Exit(code=1)
 
     if key not in config:
-        logger.error(
+        raise ValueError(
             f'Could not find [b]{key}[/b] key in invoke configuration from [b]pyproject.toml[/b], '
             f'in section [b]{section_name}[/b].',
         )
-        raise typer.Exit(code=1)
 
     return config
 
@@ -88,9 +86,14 @@ def main():
 
     Retrieves modules to import from ``pyproject.toml`` and creates a main Typer app.
     """
-    config = get_config()
-    app = create_app(module_paths=config['modules'])
-    app()
+    try:
+        config = get_config()
+    except ValueError as e:
+        logger.error(e)
+        sys.exit(1)
+    else:
+        app = create_app(module_paths=config['modules'])
+        app()
 
 
 if __name__ == '__main__':
