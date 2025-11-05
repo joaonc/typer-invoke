@@ -18,7 +18,7 @@ An alternative to:
 * [Make](https://www.gnu.org/software/make/manual/make.html)
 * [Invoke](https://www.pyinvoke.org/)
 
-### VS Invoke
+### Versus Invoke
 The main driver for this project is as a replacement for Invoke, which I've been using for
 a while and found the following limitations:
 
@@ -47,3 +47,21 @@ Other advantages (in my opinion):
 
 Invoke is the inspiration for this project, hence the name `typer-invoke` and keeping the `inv`
 command name.
+
+#### Cool things about Invoke
+Invoke concepts and features I was using that are not native to this project, but the workarounds
+work well:
+
+* **Task dependencies.**  
+  In Invoke, it's easy to declare a task dependent on others and they will be executed in the
+  correct order.  
+  While we don't have this feature, it's very easy to simply call other functions and end up with
+  the same functionality.
+* **Namespaces (task groups)**  
+  You can declare namespaces and whatever tasks you want in them.  
+  The same is done in Typer by with apps. Each app added is the equivalent of a namespace.  
+  Usually, one app is in one file, but it's not a requirement.
+* **Dry runs**  
+  The `--dry` option in Invoke is very useful and available to all tasks.  
+  Typer doesn't have this feature, but it's easy to add. See the examples in this project, under
+  the `admin` directory.
