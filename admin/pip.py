@@ -2,7 +2,6 @@
 """
 Python packages related tasks.
 """
-import logging
 from enum import StrEnum
 from pathlib import Path
 from typing import Annotated
@@ -12,8 +11,7 @@ import typer
 from admin.utils import DryAnnotation, install_package, run
 
 from . import PROJECT_ROOT
-
-logger = logging.getLogger(__name__)
+from .utils import logger
 
 app = typer.Typer(
     help=__doc__,
@@ -162,5 +160,4 @@ def pip_upgrade(requirements, dry: DryAnnotation = False):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(message)s')
     app()

@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import Annotated
 
@@ -7,6 +6,7 @@ import typer
 from admin.utils import DryAnnotation, run
 
 from . import PROJECT_ROOT, SOURCE_DIR
+from .utils import logger
 
 BUILD_DIST_DIR = PROJECT_ROOT / 'dist'
 VERSION_FILES = [
@@ -18,7 +18,6 @@ Files that contain the package version.
 This version needs to be updated with each release.
 """
 
-logger = logging.getLogger(__name__)
 app = typer.Typer()
 
 
