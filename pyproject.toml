@@ -73,6 +73,7 @@ license = {file = 'LICENSE.txt'}
 requires-python = '>=3.9'
 # Keep dependencies synced with `requirements.in`
 dependencies = [
+    'rich',
     'typer',
     'tomli;python_version<="3.10"'
 ]
