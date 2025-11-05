@@ -16,21 +16,22 @@ def get_config() -> dict:
         config = read_package_config(section_name)
     except Exception as e:
         logger.error(
-            f'Could not read invoke configuration from `pyproject.toml`. {type(e).__name__}: {e}'
+            f'Could not read invoke configuration from [b]pyproject.toml[/b]. '
+            f'{type(e).__name__}: {e}'
         )
         raise typer.Exit(code=1)
 
     if not config:
         logger.error(
             f'Could not read invoke configuration from [b]pyproject.toml[/b], '
-            f'in section `{section_name}`.',
+            f'in section [b]{section_name}[/b].',
         )
         raise typer.Exit(code=1)
 
     if key not in config:
         logger.error(
-            f'Could not find `{key}` key in invoke configuration from `pyproject.toml`, '
-            f'in section `{section_name}`.',
+            f'Could not find [b]{key}[/b] key in invoke configuration from [b]pyproject.toml[/b], '
+            f'in section [b]{section_name}[/b].',
         )
         raise typer.Exit(code=1)
 
