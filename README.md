@@ -6,11 +6,11 @@
 Simplified invocation of typer apps from any directory.
 
 The idea is that you place typer apps in a directory in your project and then you can invoke them
-from any directory.
+from anywhere inside that project.
 
 ## Why?
-The main use case is for project management that require custom scripts for various tasks.
-Wrapping those scripts as typer apps makes them easier to use.
+The main use case is for project management that require custom scripts for various tasks.  
+Wrapping those scripts as typer apps makes them easier to use.  
 Making typer easier to use makes those scripts even easier to use.
 
 An alternative to:
