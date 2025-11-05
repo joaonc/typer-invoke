@@ -23,14 +23,13 @@ class CustomRichHandler(RichHandler):
     This extends ``RichHandler`` to customize the appearance of different log levels.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            console=console,
-            rich_tracebacks=True,
-            tracebacks_show_locals=True,
-            **kwargs
-        )
+    def __init__(self, **kwargs):
+        kwargs = {
+            'console': console,
+            'rich_tracebacks': True,
+            'tracebacks_show_locals': True,
+        } | kwargs
+        super().__init__(**kwargs)
 
     def emit(self, record):
         """
@@ -52,20 +51,20 @@ class CustomRichHandler(RichHandler):
         super().emit(record)
 
 
-def setup_logging(log_level=logging.DEBUG) -> logging.Logger:
+def get_logger(level=logging.DEBUG) -> logging.Logger:
     """
     Set up logging configuration with Rich handler and custom formatting.
 
-    :param log_level: The minimum log level to display (default: DEBUG)
+    :param level: The minimum log level to display (default: DEBUG)
     :returns: Configured logger instance.
     """
 
     # Create logger
     logger = logging.getLogger('rich_example')
-    logger.setLevel(log_level)
+    logger.setLevel(level)
     logger.handlers.clear()
     rich_handler = CustomRichHandler(
-        level=log_level,
+        level=level,
         show_time=True,
         show_level=True,
         show_path=True,
@@ -74,10 +73,7 @@ def setup_logging(log_level=logging.DEBUG) -> logging.Logger:
     )
 
     # Set custom format string and add handler
-    formatter = logging.Formatter(
-        fmt='%(message)s',
-        datefmt='[%X]'  # Time format: [HH:MM:SS]
-    )
+    formatter = logging.Formatter(fmt='%(message)s', datefmt='[%X]')  # Time format: [HH:MM:SS]
     rich_handler.setFormatter(formatter)
     logger.addHandler(rich_handler)
 

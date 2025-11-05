@@ -2,6 +2,10 @@ import importlib
 
 import typer
 
+from .logging_rich import get_logger
+
+logger = get_logger()
+
 
 def get_config() -> dict:
     """Retrieve config from ``pyproject.toml``."""
