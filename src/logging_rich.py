@@ -37,13 +37,18 @@ class CustomRichHandler(RichHandler):
 
         # Apply custom formatting based on log level
         if record.levelno >= logging.ERROR:
-            record.msg = f'[bold red]ERROR:[/bold red] [red]{msg}[/red]'
+            record.msg = f'[red]{msg}[/red]'
         elif record.levelno >= logging.WARNING:
             record.msg = f'[yellow]{msg}[/yellow]'
         elif record.levelno >= logging.INFO:
             record.msg = msg
         elif record.levelno >= logging.DEBUG:
             record.msg = f'[dim]{msg}[/dim]'
+        else:
+            record.msg = f'[dim]{msg}[/dim]'
+
+        # Clear args to prevent string interpolation from breaking Rich markup
+        record.args = ()
 
         super().emit(record)
 
@@ -62,8 +67,10 @@ def get_logger(level=logging.DEBUG) -> logging.Logger:
     _logger.handlers.clear()
     rich_handler = CustomRichHandler(
         level=level,
-        show_time=True,
+        show_time=False,
         show_level=True,
+        markup=True,
+        rich_tracebacks=False,
     )
 
     # Set custom format string and add handler

@@ -22,7 +22,7 @@ def get_config() -> dict:
 
     if not config:
         logger.error(
-            f'Could not read invoke configuration from `pyproject.toml`, '
+            f'Could not read invoke configuration from [b]pyproject.toml[/b], '
             f'in section `{section_name}`.',
         )
         raise typer.Exit(code=1)
