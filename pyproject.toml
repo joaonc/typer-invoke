@@ -51,6 +51,7 @@ exclude = [
 modules = [
     'admin.build',
     'admin.pip',
+    'admin.test',
     'sample.hello'
 ]
 no_args_is_help = true

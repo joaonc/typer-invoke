@@ -31,18 +31,21 @@ a while and found the following limitations:
   ```
   inv some task --help
   ```
-* Lack of support.
+* Output can be subdued.  
+  If you use tools that have colors in their output, often that output is stripped of colors and
+  other formatting. There are settings you can play with, but often it doesn't work.
+* Lack of support.  
   Some issues and features have been piling up for a while, and I'm not sure if they will ever
   be addressed. Seems like [the project](https://github.com/pyinvoke/invoke) has had new development
   recently, though.  
   [Typer](https://typer.tiangolo.com/) is widely used and has a lot of support.
 
 Other advantages (in my opinion):
-* Prettier
+* Prettier.  
   Developer experience counts. Other than more common usage patterns, Typer supports
   [rich](https://github.com/Textualize/rich) and Markdown formatting.  
   Including using `rich` for logging, which is done in this project.
-* No dot `.` namespace
+* No dot `.` namespace.  
   Invoke uses a dot `.` namespace for tasks, which is not very common when running scripts.  
   Typer follows a normal CLI pattern. Namespaces are Typer apps and are separated by a space.
 
