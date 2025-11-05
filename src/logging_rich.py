@@ -8,10 +8,10 @@ import logging
 from rich.console import Console
 from rich.highlighter import ReprHighlighter
 from rich.logging import RichHandler
-from rich.traceback import install
 
 # Install rich traceback handler for better error display
-install(show_locals=True)
+# from rich.traceback import install
+# install(show_locals=True)
 
 # Create a custom console instance for more control
 console = Console(stderr=True, force_terminal=True)
@@ -26,9 +26,6 @@ class CustomRichHandler(RichHandler):
 
     def __init__(self, **kwargs):
         kwargs.setdefault('console', console)
-        kwargs.setdefault('rich_tracebacks', True)
-        kwargs.setdefault('tracebacks_show_locals', True)
-
         super().__init__(**kwargs)
 
     def emit(self, record):
@@ -60,16 +57,13 @@ def get_logger(level=logging.DEBUG) -> logging.Logger:
     """
 
     # Create logger
-    _logger = logging.getLogger('rich_example')
+    _logger = logging.getLogger('typer-invoke')
     _logger.setLevel(level)
     _logger.handlers.clear()
     rich_handler = CustomRichHandler(
         level=level,
         show_time=True,
         show_level=True,
-        show_path=True,
-        enable_link_path=True,
-        highlighter=ReprHighlighter(),
     )
 
     # Set custom format string and add handler
