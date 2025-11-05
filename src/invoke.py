@@ -2,9 +2,7 @@ import importlib
 
 import typer
 
-from .logging_rich import get_logger
-
-logger = get_logger()
+from .logging_rich import logger
 
 
 def get_config() -> dict:
@@ -17,25 +15,22 @@ def get_config() -> dict:
     try:
         config = read_package_config(section_name)
     except Exception as e:
-        typer.echo(
-            f'Error: Could not read invoke configuration from `pyproject.toml`. '
-            f'{type(e).__name__}: {e}',
-            err=True,
+        logger.error(
+            f'Could not read invoke configuration from `pyproject.toml`. {type(e).__name__}: {e}'
         )
         raise typer.Exit(code=1)
 
     if not config:
-        typer.echo(
-            f'Error: Could not read invoke configuration from `pyproject.toml`, '
+        logger.error(
+            f'Could not read invoke configuration from `pyproject.toml`, '
             f'in section `{section_name}`.',
-            err=True,
         )
         raise typer.Exit(code=1)
+
     if key not in config:
-        typer.echo(
-            f'Error: Could not find `{key}` key in invoke configuration from `pyproject.toml`, '
+        logger.error(
+            f'Could not find `{key}` key in invoke configuration from `pyproject.toml`, '
             f'in section `{section_name}`.',
-            err=True,
         )
         raise typer.Exit(code=1)
 
@@ -61,7 +56,7 @@ def load_module_app(module_path: str, base_path: str) -> typer.Typer | None:
             )
             return None
     except ImportError as e:
-        typer.echo(f'Error: Could not import module `{module_path}`: {e}', err=True)
+        typer.echo(f'Could not import module `{module_path}`: {e}', err=True)
         return None
 
 

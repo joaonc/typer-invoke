@@ -60,9 +60,9 @@ def get_logger(level=logging.DEBUG) -> logging.Logger:
     """
 
     # Create logger
-    logger = logging.getLogger('rich_example')
-    logger.setLevel(level)
-    logger.handlers.clear()
+    _logger = logging.getLogger('rich_example')
+    _logger.setLevel(level)
+    _logger.handlers.clear()
     rich_handler = CustomRichHandler(
         level=level,
         show_time=True,
@@ -75,9 +75,12 @@ def get_logger(level=logging.DEBUG) -> logging.Logger:
     # Set custom format string and add handler
     formatter = logging.Formatter(fmt='%(message)s', datefmt='[%X]')  # Time format: [HH:MM:SS]
     rich_handler.setFormatter(formatter)
-    logger.addHandler(rich_handler)
+    _logger.addHandler(rich_handler)
 
     # Prevent logs from being handled by root logger (avoid duplicate output)
-    logger.propagate = False
+    _logger.propagate = False
 
-    return logger
+    return _logger
+
+
+logger = get_logger()

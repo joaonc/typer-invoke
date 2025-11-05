@@ -40,7 +40,8 @@ a while and found the following limitations:
 Other advantages (in my opinion):
 * Prettier
   Developer experience counts. Other than more common usage patterns, Typer supports
-  [rich](https://github.com/Textualize/rich) and Markdown formatting.
+  [rich](https://github.com/Textualize/rich) and Markdown formatting.  
+  Including using `rich` for logging, which is done in this project.
 * No dot `.` namespace
   Invoke uses a dot `.` namespace for tasks, which is not very common when running scripts.  
   Typer follows a normal CLI pattern. Namespaces are Typer apps and are separated by a space.
