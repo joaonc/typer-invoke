@@ -4,9 +4,10 @@ This example demonstrates custom formatting, different log levels, and Rich mark
 """
 
 import logging
+
 from rich.console import Console
-from rich.logging import RichHandler
 from rich.highlighter import ReprHighlighter
+from rich.logging import RichHandler
 from rich.traceback import install
 
 # Install rich traceback handler for better error display
@@ -24,11 +25,10 @@ class CustomRichHandler(RichHandler):
     """
 
     def __init__(self, **kwargs):
-        kwargs = {
-            'console': console,
-            'rich_tracebacks': True,
-            'tracebacks_show_locals': True,
-        } | kwargs
+        kwargs.setdefault('console', console)
+        kwargs.setdefault('rich_tracebacks', True)
+        kwargs.setdefault('tracebacks_show_locals', True)
+
         super().__init__(**kwargs)
 
     def emit(self, record):
