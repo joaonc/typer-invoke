@@ -15,10 +15,12 @@ mdurl==0.1.2
 pygments==2.19.2
     # via rich
 rich==14.2.0
-    # via typer
+    # via
+    #   -r requirements.in
+    #   typer
 shellingham==1.5.4
     # via typer
 typer==0.20.0
-    # via -r C:/Users/joaon/code/typer-invoke/admin/requirements/requirements.in
+    # via -r requirements.in
 typing-extensions==4.15.0
     # via typer
