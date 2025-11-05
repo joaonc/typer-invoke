@@ -5,9 +5,7 @@ from enum import Enum
 from typing import Annotated
 
 import typer
-
-logger = logging.getLogger(__name__)
-
+from rich.logging import RichHandler
 
 DryAnnotation = Annotated[
     bool,
@@ -67,3 +65,32 @@ def install_package(package: str, dry: bool = False):
         return
 
     run(dry, sys.executable, '-m', 'pip', 'install', package)
+
+
+def get_logger(name=None, level=logging.DEBUG) -> logging.Logger:
+    """Set up logging configuration with Rich handler and custom formatting."""
+
+    # Create logger
+    _logger = logging.getLogger('typer-invoke')
+    _logger.setLevel(level)
+    _logger.handlers.clear()
+    handler = RichHandler(
+        level=level,
+        show_time=False,
+        show_level=True,
+        markup=True,
+        rich_tracebacks=False,
+    )
+
+    # Set custom format string and add handler
+    formatter = logging.Formatter(fmt='%(message)s', datefmt='[%X]')  # Time format: [HH:MM:SS]
+    handler.setFormatter(formatter)
+    _logger.addHandler(handler)
+
+    # Prevent logs from being handled by root logger (avoid duplicate output)
+    _logger.propagate = False
+
+    return _logger
+
+
+logger = get_logger()

@@ -29,7 +29,7 @@ typer-invoke/
 
 ### Python Version
 - Target: Python 3.12
-- Minimum: Python 3.9
+- Minimum: Python 3.10
 
 ### Code Style
 - **Formatter**: Black (line length: 100, skip string normalization)
@@ -92,5 +92,5 @@ Uses the `admin.build` module via the `inv` command.
 2. Run type checking with mypy
 3. Add tests in `tests/` directory
 4. Update README.md if user-facing changes
-5. Ensure Python 3.9+ compatibility
+5. Ensure Python 3.10+ compatibility
 6. Keep dependencies minimal
