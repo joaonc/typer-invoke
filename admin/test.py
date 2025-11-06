@@ -1,6 +1,6 @@
 #!python
 """
-Python packages related tasks.
+Testing with `pytest`.
 """
 
 import typer
