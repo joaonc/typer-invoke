@@ -113,7 +113,7 @@ def _get_version_from_release_name(release_name: str) -> str:
     return release_name[1:]
 
 
-def _get_latest_release(c) -> tuple[str, str, list[dict]]:
+def _get_latest_release(dry: bool) -> tuple[str, str, list[dict]]:
     """
     Retrieves the latest release from GitHub.
 
@@ -121,7 +121,9 @@ def _get_latest_release(c) -> tuple[str, str, list[dict]]:
     """
     import json
 
-    release_info_json = c.run('gh release view --json name,tagName,assets').stdout.strip()
+    release_info_json = run(
+        dry, 'gh', 'release', 'view', '--json', 'name,tagName,assets'
+    ).stdout.strip()
     release_info = json.loads(release_info_json)
     return release_info['name'], release_info['tagName'], release_info['assets']
 
