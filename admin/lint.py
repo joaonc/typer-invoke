@@ -5,7 +5,7 @@ Linting and static type checking.
 
 import typer
 
-from .utils import DryAnnotation, logger, run
+from admin.utils import DryAnnotation, logger, run
 
 app = typer.Typer(
     help=__doc__,

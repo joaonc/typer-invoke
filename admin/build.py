@@ -3,10 +3,8 @@ from typing import Annotated
 
 import typer
 
-from admin.utils import DryAnnotation, run
-
-from . import PROJECT_ROOT, SOURCE_DIR
-from .utils import logger
+from admin import PROJECT_ROOT, SOURCE_DIR
+from admin.utils import DryAnnotation, logger, run
 
 BUILD_DIST_DIR = PROJECT_ROOT / 'dist'
 VERSION_FILES = [
