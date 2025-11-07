@@ -8,10 +8,8 @@ from typing import Annotated
 
 import typer
 
-from admin.utils import DryAnnotation, install_package, run
-
-from . import PROJECT_ROOT
-from .utils import logger
+from admin import PROJECT_ROOT
+from admin.utils import DryAnnotation, install_package, logger, run
 
 app = typer.Typer(
     help=__doc__,
