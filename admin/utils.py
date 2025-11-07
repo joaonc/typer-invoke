@@ -7,6 +7,8 @@ from typing import Annotated
 import typer
 from rich.logging import RichHandler
 
+from admin import PROJECT_ROOT
+
 DryAnnotation = Annotated[
     bool,
     typer.Option(
@@ -45,7 +47,7 @@ def run(dry: bool, *args) -> subprocess.CompletedProcess | None:
         return None
 
     try:
-        return subprocess.run(args, check=True)
+        return subprocess.run(args, cwd=PROJECT_ROOT, check=True)
     except subprocess.CalledProcessError as e:
         logger.error(e)
         raise typer.Exit(1)
