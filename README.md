@@ -8,6 +8,23 @@ Simplified invocation of typer apps from any directory.
 The idea is that you place typer apps in a directory in your project and then you can invoke them
 from anywhere inside that project.
 
+## Example
+1. Place scripts anywhere in the project (ex `admin` directory).
+2. Make sure they're `typer` apps.
+3. Register them in `pyproject.toml`.
+4. Invoke them from anywhere in the project.
+
+Ex:
+```
+inv --help
+inv help-full
+inv build deploy
+inv test unit --pri1
+```
+
+In this project there's the `admin` directory with scripts actually used for managing the project
+and the `sample` directory with more samples on how to use this package.
+
 ## Why?
 The main use case is for project management that require custom scripts for various tasks.  
 Wrapping those scripts as typer apps makes them easier to use.  
@@ -30,6 +47,10 @@ a while and found the following limitations:
   Here a more common pattern is used and `--help` acts as both help and list:
   ```
   inv some task --help
+  ```
+  There's also `help-full`, which lists all tasks recursively:
+* ```
+  inv help-full
   ```
 * Output can be subdued.  
   If you use tools that have colors in their output, often that output is stripped of colors and
