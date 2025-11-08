@@ -17,6 +17,7 @@ from anywhere inside that project.
 Ex:
 ```
 inv --help
+inv help-full
 inv build deploy
 inv test unit --pri1
 ```
@@ -46,6 +47,10 @@ a while and found the following limitations:
   Here a more common pattern is used and `--help` acts as both help and list:
   ```
   inv some task --help
+  ```
+  There's also `help-full`, which lists all tasks recursively:
+* ```
+  inv help-full
   ```
 * Output can be subdued.  
   If you use tools that have colors in their output, often that output is stripped of colors and
