@@ -71,7 +71,7 @@ def extract_typer_info(
     Extract information from a Typer app and its sub-apps recursively.
 
     This function traverses a Typer application and extracts all commands and
-    sub-groups (nested Typer instances) into a tree structure. It processes both
+    subgroups (nested Typer instances) into a tree structure. It processes both
     registered commands and registered groups, filtering out hidden items.
 
     :param typer_obj: The Typer application instance to extract information from.
@@ -105,6 +105,22 @@ def clean_text(text: str) -> str:
 
 
 def build_typer_help(node: _Node, level: int = 0) -> Group:
+    """
+    Build a rich text representation of a Typer app's help information.
+
+    This function recursively builds a formatted help display for a Typer application tree.
+    It creates a hierarchical view showing the app/group name, its help text, all commands
+    within it, and all nested subgroups.
+    The display uses indentation and color coding to distinguish between different levels
+    and types of elements.
+
+    :param node: The tree node representing a Typer app or group to format.
+    :param level: The depth level in the tree hierarchy (0 for root app, increments for
+        each nested group). Defaults to 0.
+
+    :returns: A Rich Group object containing the formatted help text with proper indentation
+        and styling for the node, its commands, and all children.
+    """
     # Section
     if level == 0:  # App info
         style_name = 'bold yellow'
