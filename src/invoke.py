@@ -65,6 +65,17 @@ def create_app(module_paths: list[str], **typer_kwargs) -> typer.Typer:
 
     app = typer.Typer(**typer_kwargs)
 
+    @app.command(name='help-full', hidden=True, help='Show full help.')
+    def show_full_help():
+        from rich.console import Console
+
+        from .typer_docs import build_typer_help, extract_typer_info
+
+        typer_info = extract_typer_info(app)
+        help_text = build_typer_help(typer_info)
+        console = Console()
+        console.print(help_text)
+
     base_path = str(find_pyproject_toml().parent)
     for module_path in module_paths:
         # Extract the module name (last part of the path) to use as subcommand name.
