@@ -67,6 +67,19 @@ def _extract_group_info(group: TyperInfo) -> _Info:
 def extract_typer_info(
     typer_obj: typer.Typer, parent: _Node | None = None, info: _Info | None = None
 ) -> _Node:
+    """
+    Extract information from a Typer app and its sub-apps recursively.
+
+    This function traverses a Typer application and extracts all commands and
+    sub-groups (nested Typer instances) into a tree structure. It processes both
+    registered commands and registered groups, filtering out hidden items.
+
+    :param typer_obj: The Typer application instance to extract information from.
+    :param parent: The parent node in the tree structure, or ``None`` for the root node.
+    :param info: Pre-extracted information for this node, or ``None`` to extract from ``typer_obj``.
+
+    :returns: A node representing this Typer app with all its commands and sub-apps.
+    """
     node = _Node(parent=parent, info=info or _extract_info(typer_obj.info))
 
     for command in typer_obj.registered_commands:
