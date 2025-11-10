@@ -279,20 +279,20 @@ def build_version(
 
     # Update files to new version
     _update_project_version(str(v2))
-    print(
+    logger.info(
         f'New version is `{v2}`. Modified files :\n'
         + '\n'.join(f'  {file.relative_to(PROJECT_ROOT)}' for file in VERSION_FILES)
     )
 
     # Commit/push/pr
     if mode == 'nothing':
-        print('Files not committed, PR not created.')
+        logger.info('Files not committed, PR not created.')
     if mode in ['commit', 'pr']:
-        print('Commit and push changes.')
+        logger.info('Commit and push changes.')
         _commit(f'bump version to {v2}', dry)
     if mode == 'pr':
         pr_title = f'Release {v2}'
-        print(f'Create and merge PR `{pr_title}`.')
+        logger.info(f'Create and merge PR `{pr_title}`.')
         _create_pr(pr_title, f'Preparing for release {v2}', dry)
 
 
