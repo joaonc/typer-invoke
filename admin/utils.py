@@ -41,6 +41,14 @@ def get_os() -> OS:
 
 
 def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | None:
+    """
+    Run a CLI command synchronously (i.e., wait for the command to finish) and return the result.
+
+    This function is a wrapper around ``subprocess.run(...)``.
+
+    If you need access to the output, add the ``capture_output=True`` argument and do
+    ``.stdout.strip()`` to get the output as a string.
+    """
     logger.info(' '.join(map(str, args)))
 
     if dry:
