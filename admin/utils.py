@@ -40,20 +40,31 @@ def get_os() -> OS:
     return OS.Linux
 
 
-def run(dry: bool, *args) -> subprocess.CompletedProcess | None:
+def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | None:
     logger.info(' '.join(map(str, args)))
 
     if dry:
         return None
 
+    defaults = dict(
+        cwd=PROJECT_ROOT,
+        capture_output=False,
+        check=True,
+    )
+
     try:
-        return subprocess.run(args, cwd=PROJECT_ROOT, capture_output=False, check=True)
+        return subprocess.run(args, **(defaults | kwargs))  # type: ignore
     except subprocess.CalledProcessError as e:
-        logger.error(e)
+        msg = str(e)
+        if e.stdout:
+            msg += f'\nSTDOUT:\n{e.stdout.decode()}'
+        if e.stderr:
+            msg += f'\nSTDERR:\n{e.stderr.decode()}'
+        logger.error(msg)
         raise typer.Exit(1)
 
 
-def run_async(dry: bool, *args) -> subprocess.Popen | None:
+def run_async(*args, dry: bool = False, **kwargs) -> subprocess.Popen | None:
     """
     Starts the process and continues code execution.
 
@@ -72,8 +83,12 @@ def run_async(dry: bool, *args) -> subprocess.Popen | None:
     if dry:
         return None
 
+    defaults = dict(
+        cwd=PROJECT_ROOT,
+    )
+
     try:
-        return subprocess.Popen(args, cwd=PROJECT_ROOT)
+        return subprocess.Popen(args, **(defaults | kwargs))
     except subprocess.CalledProcessError as e:
         logger.error(e)
         raise typer.Exit(1)
@@ -101,11 +116,11 @@ def install_package(package: str, package_install: str | None = None, dry: bool 
     run(dry, sys.executable, '-m', 'pip', 'install', package_install or package)
 
 
-def get_logger(name=None, level=logging.DEBUG) -> logging.Logger:
+def get_logger(name: str | None = 'typer-invoke', level=logging.DEBUG) -> logging.Logger:
     """Set up logging configuration with Rich handler and custom formatting."""
 
     # Create logger
-    _logger = logging.getLogger('typer-invoke')
+    _logger = logging.getLogger(name)
     _logger.setLevel(level)
     _logger.handlers.clear()
     handler = RichHandler(
