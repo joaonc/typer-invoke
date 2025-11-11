@@ -113,7 +113,7 @@ def install_package(package: str, package_install: str | None = None, dry: bool 
         logger.debug(f'Package `{package}` is already installed.')
         return
 
-    run(dry, sys.executable, '-m', 'pip', 'install', package_install or package)
+    run(sys.executable, '-m', 'pip', 'install', package_install or package, dry=dry)
 
 
 def get_logger(name: str | None = 'typer-invoke', level=logging.DEBUG) -> logging.Logger:

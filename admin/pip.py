@@ -111,7 +111,7 @@ def pip_compile(
 
     dry_option = ['--dry-run'] if dry else []
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
-        run(False, 'pip-compile', *dry_option, str(filename))
+        run('pip-compile', *dry_option, str(filename), dry=False)
 
 
 @app.command(name='sync')
@@ -120,7 +120,7 @@ def pip_sync(requirements: RequirementsAnnotation = None, dry: DryAnnotation = F
     Synchronize environment with requirements file.
     """
     install_package('piptools', 'pip-tools', dry=dry)
-    run(dry, 'pip-sync', *_get_requirements_files(requirements, RequirementsType.OUT))
+    run('pip-sync', *_get_requirements_files(requirements, RequirementsType.OUT), dry=dry)
 
 
 @app.command(name='package')
@@ -138,7 +138,11 @@ def pip_package(
 
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(
-            dry, 'pip-compile', '--upgrade-package', *' --upgrade-package '.join(packages), filename
+            'pip-compile',
+            '--upgrade-package',
+            *' --upgrade-package '.join(packages),
+            filename,
+            dry=dry,
         )
 
 
@@ -155,7 +159,7 @@ def pip_upgrade(requirements, dry: DryAnnotation = False):
     install_package('piptools', 'pip-tools', dry=dry)
 
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
-        run(dry, ['pip-compile', '--upgrade', filename])
+        run(['pip-compile', '--upgrade', filename], dry=dry)
 
 
 if __name__ == '__main__':
