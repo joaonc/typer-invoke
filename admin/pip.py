@@ -103,7 +103,7 @@ def pip_compile(
     """
     Compile requirements file(s).
     """
-    install_package('piptools', dry=dry)
+    install_package('piptools', 'pip-tools', dry=dry)
 
     if clean and not dry:
         for filename in _get_requirements_files(requirements, RequirementsType.OUT):
@@ -119,7 +119,7 @@ def pip_sync(requirements: RequirementsAnnotation = None, dry: DryAnnotation = F
     """
     Synchronize environment with requirements file.
     """
-    install_package('piptools', dry=dry)
+    install_package('piptools', 'pip-tools', dry=dry)
     run(dry, 'pip-sync', *_get_requirements_files(requirements, RequirementsType.OUT))
 
 
@@ -134,7 +134,7 @@ def pip_package(
     """
     Upgrade one or more packages.
     """
-    install_package('piptools', dry=dry)
+    install_package('piptools', 'pip-tools', dry=dry)
 
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(
@@ -152,7 +152,7 @@ def pip_upgrade(requirements, dry: DryAnnotation = False):
     Use ``package`` to only upgrade individual packages,
     Ex ``pip package dev mypy flake8``.
     """
-    install_package('piptools', dry=dry)
+    install_package('piptools', 'pip-tools', dry=dry)
 
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(dry, ['pip-compile', '--upgrade', filename])
