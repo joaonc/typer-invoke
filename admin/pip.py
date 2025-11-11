@@ -11,6 +11,8 @@ import typer
 from admin import PROJECT_ROOT
 from admin.utils import DryAnnotation, install_package, logger, run
 
+REQUIREMENTS_DIR = PROJECT_ROOT / 'admin' / 'requirements'
+
 app = typer.Typer(
     help=__doc__,
     no_args_is_help=True,
@@ -75,8 +77,7 @@ def _get_requirements_file(
     else:
         reqs_type = RequirementsType(requirements_type.lstrip('.').lower())
 
-    base_path = PROJECT_ROOT / 'admin' / 'requirements'
-    return base_path / f'{reqs}.{reqs_type}'
+    return REQUIREMENTS_DIR / f'{reqs}.{reqs_type}'
 
 
 def _get_requirements_files(
@@ -102,7 +103,7 @@ def pip_compile(
     """
     Compile requirements file(s).
     """
-    install_package('pip-tools', dry=dry)
+    install_package('piptools', 'pip-tools', dry=dry)
 
     if clean and not dry:
         for filename in _get_requirements_files(requirements, RequirementsType.OUT):
@@ -118,7 +119,7 @@ def pip_sync(requirements: RequirementsAnnotation = None, dry: DryAnnotation = F
     """
     Synchronize environment with requirements file.
     """
-    install_package('pip-tools', dry=dry)
+    install_package('piptools', 'pip-tools', dry=dry)
     run(dry, 'pip-sync', *_get_requirements_files(requirements, RequirementsType.OUT))
 
 
@@ -133,7 +134,7 @@ def pip_package(
     """
     Upgrade one or more packages.
     """
-    install_package('pip-tools', dry=dry)
+    install_package('piptools', 'pip-tools', dry=dry)
 
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(
@@ -151,7 +152,7 @@ def pip_upgrade(requirements, dry: DryAnnotation = False):
     Use ``package`` to only upgrade individual packages,
     Ex ``pip package dev mypy flake8``.
     """
-    install_package('pip-tools', dry=dry)
+    install_package('piptools', 'pip-tools', dry=dry)
 
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(dry, ['pip-compile', '--upgrade', filename])

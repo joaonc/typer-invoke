@@ -47,7 +47,33 @@ def run(dry: bool, *args) -> subprocess.CompletedProcess | None:
         return None
 
     try:
-        return subprocess.run(args, cwd=PROJECT_ROOT, check=True)
+        return subprocess.run(args, cwd=PROJECT_ROOT, capture_output=False, check=True)
+    except subprocess.CalledProcessError as e:
+        logger.error(e)
+        raise typer.Exit(1)
+
+
+def run_async(dry: bool, *args) -> subprocess.Popen | None:
+    """
+    Starts the process and continues code execution.
+
+    Use the following checks::
+
+        process.poll()              # Returns None if still running, else return code
+        process.wait()              # Wait for completion (blocking)
+        process.terminate()         # Send SIGTERM (graceful)
+        process.kill()              # Send SIGKILL (force)
+        process.returncode          # Access return code after completion
+
+    See ``subprocess.Popen(...)`` for more details.
+    """
+    logger.info(' '.join(map(str, args)))
+
+    if dry:
+        return None
+
+    try:
+        return subprocess.Popen(args, cwd=PROJECT_ROOT)
     except subprocess.CalledProcessError as e:
         logger.error(e)
         raise typer.Exit(1)
@@ -60,13 +86,19 @@ def is_package_installed(package_name: str) -> bool:
     return importlib.util.find_spec(package_name) is not None
 
 
-def install_package(package: str, dry: bool = False):
-    """Install a Python package if not already installed."""
+def install_package(package: str, package_install: str | None = None, dry: bool = False):
+    """
+    Install a Python package if not already installed.
+
+    :param package: Name of the package to check/install.
+    :param package_install: Name of the package to install, if different from the name to check.
+    :param dry: Show the command that would be run without running it.
+    """
     if is_package_installed(package):
         logger.debug(f'Package `{package}` is already installed.')
         return
 
-    run(dry, sys.executable, '-m', 'pip', 'install', package)
+    run(dry, sys.executable, '-m', 'pip', 'install', package_install or package)
 
 
 def get_logger(name=None, level=logging.DEBUG) -> logging.Logger:
