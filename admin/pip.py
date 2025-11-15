@@ -9,7 +9,7 @@ from typing import Annotated
 import typer
 
 from admin import PROJECT_ROOT
-from admin.utils import DryAnnotation, install_package, logger, run
+from admin.utils import DryAnnotation, install_package, logger, multiple_parameters, run
 
 REQUIREMENTS_DIR = PROJECT_ROOT / 'admin' / 'requirements'
 
@@ -111,7 +111,7 @@ def pip_compile(
 
     dry_option = ['--dry-run'] if dry else []
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
-        run(False, 'pip-compile', *dry_option, str(filename))
+        run('pip-compile', *dry_option, str(filename), dry=False)
 
 
 @app.command(name='sync')
@@ -120,14 +120,14 @@ def pip_sync(requirements: RequirementsAnnotation = None, dry: DryAnnotation = F
     Synchronize environment with requirements file.
     """
     install_package('piptools', 'pip-tools', dry=dry)
-    run(dry, 'pip-sync', *_get_requirements_files(requirements, RequirementsType.OUT))
+    run('pip-sync', *_get_requirements_files(requirements, RequirementsType.OUT), dry=dry)
 
 
 @app.command(name='package')
 def pip_package(
     requirements: RequirementsAnnotation,
-    packages: Annotated[
-        list[str], typer.Option('--packages', '-p', help='One or more packages to upgrade.')
+    package: Annotated[
+        list[str], typer.Option('--package', '-p', help='One or more packages to upgrade.')
     ],
     dry: DryAnnotation = False,
 ):
@@ -138,7 +138,10 @@ def pip_package(
 
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(
-            dry, 'pip-compile', '--upgrade-package', *' --upgrade-package '.join(packages), filename
+            'pip-compile',
+            *multiple_parameters('--upgrade-package', *package),
+            filename,
+            dry=dry,
         )
 
 
@@ -155,7 +158,7 @@ def pip_upgrade(requirements, dry: DryAnnotation = False):
     install_package('piptools', 'pip-tools', dry=dry)
 
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
-        run(dry, ['pip-compile', '--upgrade', filename])
+        run(['pip-compile', '--upgrade', filename], dry=dry)
 
 
 if __name__ == '__main__':
