@@ -126,8 +126,8 @@ def pip_sync(requirements: RequirementsAnnotation = None, dry: DryAnnotation = F
 @app.command(name='package')
 def pip_package(
     requirements: RequirementsAnnotation,
-    packages: Annotated[
-        list[str], typer.Option('--packages', '-p', help='One or more packages to upgrade.')
+    package: Annotated[
+        list[str], typer.Option('--package', '-p', help='One or more packages to upgrade.')
     ],
     dry: DryAnnotation = False,
 ):
@@ -140,7 +140,7 @@ def pip_package(
         run(
             'pip-compile',
             '--upgrade-package',
-            *' --upgrade-package '.join(packages),
+            *' --upgrade-package '.join(package),
             filename,
             dry=dry,
         )

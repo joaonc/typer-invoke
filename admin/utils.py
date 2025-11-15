@@ -2,6 +2,7 @@ import logging
 import subprocess
 import sys
 from enum import Enum
+from itertools import chain
 from typing import Annotated
 
 import typer
@@ -122,6 +123,10 @@ def install_package(package: str, package_install: str | None = None, dry: bool 
         return
 
     run(sys.executable, '-m', 'pip', 'install', package_install or package, dry=dry)
+
+
+def multiple_parameters(parameter: str, *options) -> list[str]:
+    return list(chain.from_iterable(zip([parameter] * len(options), map(str, options))))
 
 
 def get_logger(name: str | None = 'typer-invoke', level=logging.DEBUG) -> logging.Logger:
