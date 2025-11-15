@@ -9,7 +9,7 @@ from typing import Annotated
 import typer
 
 from admin import PROJECT_ROOT
-from admin.utils import DryAnnotation, install_package, logger, run, multiple_parameters
+from admin.utils import DryAnnotation, install_package, logger, multiple_parameters, run
 
 REQUIREMENTS_DIR = PROJECT_ROOT / 'admin' / 'requirements'
 
