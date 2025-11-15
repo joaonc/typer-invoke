@@ -9,7 +9,7 @@ from typing import Annotated
 import typer
 
 from admin import PROJECT_ROOT
-from admin.utils import DryAnnotation, install_package, logger, run
+from admin.utils import DryAnnotation, install_package, logger, run, multiple_parameters
 
 REQUIREMENTS_DIR = PROJECT_ROOT / 'admin' / 'requirements'
 
@@ -139,8 +139,7 @@ def pip_package(
     for filename in _get_requirements_files(requirements, RequirementsType.IN):
         run(
             'pip-compile',
-            '--upgrade-package',
-            *' --upgrade-package '.join(package),
+            *multiple_parameters('--upgrade-package', *package),
             filename,
             dry=dry,
         )
