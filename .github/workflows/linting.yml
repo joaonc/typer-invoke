@@ -20,10 +20,10 @@ jobs:
         run: pip install -r admin/requirements/requirements-dev.txt
 
       - name: isort
-        run: inv lint isort
+        run: isort .
       - name: black
-        run: inv lint black
+        run: black .
       - name: flake8
-        run: inv lint flake8
+        run: flake8 .
       - name: mypy
-        run: inv lint mypy
+        run: mypy src && mypy admin
