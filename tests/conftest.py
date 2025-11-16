@@ -1,7 +1,7 @@
 import pytest
 from rich.console import Console
 
-from logging_invoke import get_logger, set_logger
+from typer_invoke.logging_invoke import get_logger, set_logger
 
 
 @pytest.fixture(scope='session')

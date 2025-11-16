@@ -8,6 +8,7 @@ from .logging_invoke import set_logger
 
 SECTION_NAME = 'typer-invoke'
 
+
 class TyperInvoke(typer.Typer):
     """Typer app that adds invoke configuration."""
 

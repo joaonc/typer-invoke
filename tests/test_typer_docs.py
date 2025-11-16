@@ -4,7 +4,7 @@ import pytest
 import typer
 from rich.console import Group
 
-from src.typer_docs import (
+from typer_invoke.typer_docs import (
     _extract_command_info,
     _extract_group_info,
     _extract_info,

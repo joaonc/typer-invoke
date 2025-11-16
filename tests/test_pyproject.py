@@ -12,7 +12,7 @@ else:
     except ImportError:
         pytest.skip('tomli not available', allow_module_level=True)
 
-from pyproject import (
+from typer_invoke.pyproject import (
     PackageConfig,
     find_pyproject_toml,
     get_package_setting,
@@ -61,7 +61,7 @@ class TestFindPyprojectToml:
         with pytest.raises(FileNotFoundError, match='pyproject.toml not found'):
             find_pyproject_toml(subdir)
 
-    @patch('pyproject.Path.cwd')
+    @patch('typer_invoke.pyproject.Path.cwd')
     def test_find_pyproject_toml_default_start_path(self, mock_cwd, tmp_path):
         """Test default start_path uses current working directory."""
         mock_cwd.return_value = tmp_path
@@ -113,7 +113,7 @@ timeout = 60
 """
         pyproject_file.write_text(content)
 
-        with patch('pyproject.find_pyproject_toml', return_value=pyproject_file):
+        with patch('typer_invoke.pyproject.find_pyproject_toml', return_value=pyproject_file):
             result = read_package_config(package_name)
             assert result == {'timeout': 60}
 
@@ -151,7 +151,7 @@ config = "value"
 
     def test_read_package_config_file_not_found_auto_discovery(self):
         """Test FileNotFoundError when auto-discovery fails."""
-        with patch('pyproject.find_pyproject_toml', side_effect=FileNotFoundError()):
+        with patch('typer_invoke.pyproject.find_pyproject_toml', side_effect=FileNotFoundError()):
             with pytest.raises(FileNotFoundError):
                 read_package_config('invoke')
 
@@ -214,19 +214,19 @@ timeout = 45
 
     def test_get_package_setting_file_not_found_returns_default(self):
         """Test returning default when file is not found."""
-        with patch('pyproject.read_package_config', side_effect=FileNotFoundError()):
+        with patch('typer_invoke.pyproject.read_package_config', side_effect=FileNotFoundError()):
             result = get_package_setting('invoke', 'timeout', default=300)
             assert result == 300
 
     def test_get_package_setting_exception_returns_default(self, tmp_path):
         """Test returning default when exception occurs."""
-        with patch('pyproject.read_package_config', side_effect=Exception('Some error')):
+        with patch('typer_invoke.pyproject.read_package_config', side_effect=Exception('Some error')):
             result = get_package_setting('invoke', 'timeout', default=120)
             assert result == 120
 
     def test_get_package_setting_none_default(self, tmp_path):
         """Test that None default is returned properly."""
-        with patch('pyproject.read_package_config', side_effect=FileNotFoundError()):
+        with patch('typer_invoke.pyproject.read_package_config', side_effect=FileNotFoundError()):
             result = get_package_setting('invoke', 'timeout')
             assert result is None
 
@@ -298,7 +298,7 @@ timeout = 60
 
     def test_package_config_file_not_found(self):
         """Test behavior when pyproject.toml is not found."""
-        with patch('pyproject.read_package_config', side_effect=FileNotFoundError()):
+        with patch('typer_invoke.pyproject.read_package_config', side_effect=FileNotFoundError()):
             config = PackageConfig('invoke')
 
             # Should return empty dict when file not found
@@ -307,7 +307,7 @@ timeout = 60
 
     def test_package_config_exception_handling(self):
         """Test behavior when exception occurs during config loading."""
-        with patch('pyproject.read_package_config', side_effect=Exception('Some error')):
+        with patch('typer_invoke.pyproject.read_package_config', side_effect=Exception('Some error')):
             config = PackageConfig('invoke')
 
             # Should return empty dict when exception occurs
