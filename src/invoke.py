@@ -1,20 +1,27 @@
 import importlib
-import sys
 
 import typer
+from rich.pretty import pretty_repr
 
-from .logging_rich import logger
+from . import __version__
+from .logging_invoke import set_logger
+
+SECTION_NAME = 'typer-invoke'
+
+class TyperInvoke(typer.Typer):
+    """Typer app that adds invoke configuration."""
+
+    def __init__(self, invoke: dict, **kwargs):
+        self.invoke = invoke
+        super().__init__(**kwargs)
 
 
 def get_config() -> dict:
     """Retrieve config from ``pyproject.toml``."""
     from .pyproject import read_package_config
 
-    section_name = 'typer-invoke'
-    key = 'modules'
-
     try:
-        config = read_package_config(section_name)
+        config = read_package_config(SECTION_NAME)
     except Exception as e:
         raise ValueError(
             f'Could not read invoke configuration from [b]pyproject.toml[/b]. '
@@ -24,13 +31,14 @@ def get_config() -> dict:
     if not config:
         raise ValueError(
             f'Could not read invoke configuration from [b]pyproject.toml[/b], '
-            f'in section [b]{section_name}[/b].',
+            f'in section [b]{SECTION_NAME}[/b].',
         )
 
+    key = 'modules'
     if key not in config:
         raise ValueError(
             f'Could not find [b]{key}[/b] key in invoke configuration from [b]pyproject.toml[/b], '
-            f'in section [b]{section_name}[/b].',
+            f'in section [b]{SECTION_NAME}[/b].',
         )
 
     return config
@@ -59,11 +67,33 @@ def load_module_app(module_path: str, base_path: str) -> typer.Typer | None:
         return None
 
 
-def create_app(module_paths: list[str], **typer_kwargs) -> typer.Typer:
+def create_app(module_paths: list[str], base_path: str | None = None, **kwargs) -> typer.Typer:
     """Create a main Typer app with subcommands from specified modules."""
-    from .pyproject import find_pyproject_toml
+    if not base_path:
+        from .pyproject import find_pyproject_toml
 
-    app = typer.Typer(**typer_kwargs)
+        base_path = str(find_pyproject_toml().parent)
+
+    # Defaults for Typer and Invoke
+    defaults_typer = dict(
+        no_args_is_help=True,
+        add_completion=False,
+        rich_markup_mode='markdown',
+    )
+
+    defaults_invoke = dict(logging_level='INFO', logging_format='%(message)s')
+
+    # Initialize Invoke, which is just logging configuration
+    invoke_kwargs = {k: kwargs.pop(k, v) for k, v in defaults_invoke.items()}
+    logger = set_logger(level=invoke_kwargs['logging_level'], fmt=invoke_kwargs['logging_format'])
+
+    logger.debug(f'typer-invoke {__version__}')
+    logger.debug(f'Invoke kwargs: \n{pretty_repr(invoke_kwargs, expand_all=True)}')
+
+    # Initialize Typer
+    typer_kwargs = defaults_typer | kwargs
+    logger.debug(f'Typer kwargs: \n{pretty_repr(typer_kwargs, expand_all=True)}')
+    app = TyperInvoke(invoke=dict(kwargs=invoke_kwargs, logger=logger), **typer_kwargs)
 
     @app.command(name='help-full', hidden=True, help='Show full help.')
     def show_full_help():
@@ -76,7 +106,6 @@ def create_app(module_paths: list[str], **typer_kwargs) -> typer.Typer:
         console = Console()
         console.print(help_text)
 
-    base_path = str(find_pyproject_toml().parent)
     for module_path in module_paths:
         # Extract the module name (last part of the path) to use as subcommand name.
         module_name = module_path.split('.')[-1]
@@ -97,14 +126,10 @@ def main():
 
     Retrieves modules to import from ``pyproject.toml`` and creates a main Typer app.
     """
-    try:
-        config = get_config()
-    except ValueError as e:
-        logger.error(e)
-        sys.exit(1)
-    else:
-        app = create_app(module_paths=config['modules'])
-        app()
+    config = get_config()
+    module_paths = config.pop('modules')
+    app = create_app(module_paths, **config)
+    app()
 
 
 if __name__ == '__main__':

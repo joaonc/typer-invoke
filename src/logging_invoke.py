@@ -1,6 +1,5 @@
 """
-Comprehensive example of Python logging with Rich package for enhanced console output.
-This example demonstrates custom formatting, different log levels, and Rich markup usage.
+Logging for ``typer-invoke``, using Rich handler.
 """
 
 import logging
@@ -14,6 +13,7 @@ from rich.logging import RichHandler
 
 # Create a custom console instance for more control
 console = Console(stderr=True, force_terminal=True)
+_logger: logging.Logger | None = None
 
 
 class CustomRichHandler(RichHandler):
@@ -27,7 +27,7 @@ class CustomRichHandler(RichHandler):
         kwargs.setdefault('console', console)
         super().__init__(**kwargs)
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord):
         """
         Custom emit method to handle different log level formatting.
         """
@@ -52,13 +52,20 @@ class CustomRichHandler(RichHandler):
         super().emit(record)
 
 
-def get_logger(level=logging.DEBUG) -> logging.Logger:
+def set_logger(level: str | int = logging.DEBUG, fmt: str = '%(message)s') -> logging.Logger:
     """
-    Set up logging configuration with Rich handler and custom formatting.
+    Set up a logging configuration with Rich handler and custom formatting.
 
-    :param level: The minimum log level to display (default: DEBUG)
+    :param level: The minimum log level to display.
+    :param fmt: Custom format string for log messages.
+
     :returns: Configured logger instance.
     """
+
+    global _logger
+    if _logger is not None:
+        _logger.debug('Setting the logger when already set. Doing nothing.')
+        return _logger
 
     # Create logger
     _logger = logging.getLogger('typer-invoke')
@@ -73,7 +80,7 @@ def get_logger(level=logging.DEBUG) -> logging.Logger:
     )
 
     # Set custom format string and add handler
-    formatter = logging.Formatter(fmt='%(message)s', datefmt='[%X]')  # Time format: [HH:MM:SS]
+    formatter = logging.Formatter(fmt=fmt, datefmt='[%X]')  # Time format: [HH:MM:SS]
     handler.setFormatter(formatter)
     _logger.addHandler(handler)
 
@@ -83,4 +90,8 @@ def get_logger(level=logging.DEBUG) -> logging.Logger:
     return _logger
 
 
-logger = get_logger()
+def get_logger() -> logging.Logger:
+    if _logger is None:
+        raise ValueError('Logger not yet initialized.')
+
+    return _logger
