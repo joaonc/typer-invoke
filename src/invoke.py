@@ -2,8 +2,17 @@ import importlib
 
 import typer
 from rich.pretty import pretty_repr
+
 from . import __version__
 from .logging_rich import set_logger
+
+
+class TyperInvoke(typer.Typer):
+    """Typer app that adds invoke configuration."""
+
+    def __init__(self, invoke: dict, **kwargs):
+        self.invoke = invoke
+        super().__init__(**kwargs)
 
 
 def get_config() -> dict:
@@ -79,16 +88,13 @@ def create_app(module_paths: list[str], base_path: str | None = None, **kwargs) 
     invoke_kwargs = {k: kwargs.pop(k, v) for k, v in defaults_invoke.items()}
     logger = set_logger(level=invoke_kwargs['logging_level'], fmt=invoke_kwargs['logging_format'])
 
-    logger.debug(f'typer-invoke v{__version__}')
-    logger.debug(f'Invoke kwargs: \n{pretty_repr(invoke_kwargs)}')
+    logger.debug(f'typer-invoke {__version__}')
+    logger.debug(f'Invoke kwargs: \n{pretty_repr(invoke_kwargs, expand_all=True)}')
 
     # Initialize Typer
     typer_kwargs = defaults_typer | kwargs
-    logger.debug(f'Typer kwargs: \n{pretty_repr(typer_kwargs)}')
-    app = typer.Typer(**typer_kwargs)
-
-    # Add typer-invoke info
-    app.invoke = dict(kwargs=invoke_kwargs, logger=logger)
+    logger.debug(f'Typer kwargs: \n{pretty_repr(typer_kwargs, expand_all=True)}')
+    app = TyperInvoke(invoke=dict(kwargs=invoke_kwargs, logger=logger), **typer_kwargs)
 
     @app.command(name='help-full', hidden=True, help='Show full help.')
     def show_full_help():

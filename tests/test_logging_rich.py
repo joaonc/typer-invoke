@@ -1,5 +1,3 @@
-import logging
-
 import pytest
 from rich.console import Console
 
@@ -13,7 +11,7 @@ def console():
 
 @pytest.fixture(scope='module')
 def logger():
-    return get_logger(level=logging.DEBUG)
+    return get_logger()
 
 
 def test_demonstrate_log_levels(console, logger):
