@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Self
 
 import typer
 from rich.console import Group
@@ -22,10 +22,10 @@ class _Node:
     A node represents a typer group, which contains commands and subgroups.
     """
 
-    parent: Optional['_Node']  # `None` for root.
+    parent: Self | None  # `None` for root.
     info: _Info
     commands_infos: list[_Info] = field(default_factory=list)
-    children: list['_Node'] = field(default_factory=list)
+    children: list[Self] = field(default_factory=list)
 
 
 def _extract_info(info: CommandInfo | TyperInfo) -> _Info:
