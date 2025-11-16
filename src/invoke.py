@@ -4,7 +4,7 @@ import typer
 from rich.pretty import pretty_repr
 
 from . import __version__
-from .logging_rich import set_logger
+from .logging_invoke import set_logger
 
 
 class TyperInvoke(typer.Typer):

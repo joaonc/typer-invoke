@@ -1,6 +1,5 @@
 """
-Comprehensive example of Python logging with Rich package for enhanced console output.
-This example demonstrates custom formatting, different log levels, and Rich markup usage.
+Logging for ``typer-invoke``, using Rich handler.
 """
 
 import logging
