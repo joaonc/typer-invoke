@@ -74,7 +74,9 @@ jobs:
           python-version: '3.12'
 
       - name: Install requirements
-        run: python -m src.typer_invoke.invoke pip install dev
+        run: |
+          pip install typer
+          python -m src.typer_invoke.invoke pip install dev
 
       - name: Set git user
         run: |
