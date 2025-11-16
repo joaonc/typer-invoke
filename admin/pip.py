@@ -161,5 +161,16 @@ def pip_upgrade(requirements, dry: DryAnnotation = False):
         run(['pip-compile', '--upgrade', filename], dry=dry)
 
 
+@app.command(name='install')
+def pip_install(requirements: RequirementsAnnotation, dry: DryAnnotation = False):
+    """
+    Equivalent to ``pip install -r <requirements*.txt>``.
+
+    Does not require ``pip-tools``.
+    """
+    requirements_files = _get_requirements_files(requirements, RequirementsType.OUT)  # type: ignore
+    run(dry, 'pip', 'install', *multiple_parameters('-r', *requirements_files), dry=dry)
+
+
 if __name__ == '__main__':
     app()
