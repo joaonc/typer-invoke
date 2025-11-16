@@ -12,7 +12,7 @@ else:
     except ImportError:
         pytest.skip('tomli not available', allow_module_level=True)
 
-from src.pyproject import (
+from pyproject import (
     PackageConfig,
     find_pyproject_toml,
     get_package_setting,

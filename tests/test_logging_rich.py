@@ -1,19 +1,3 @@
-import pytest
-from rich.console import Console
-
-from src.logging_rich import get_logger
-
-
-@pytest.fixture(scope='module')
-def console():
-    return Console(stderr=True, force_terminal=True)
-
-
-@pytest.fixture(scope='module')
-def logger():
-    return get_logger()
-
-
 def test_demonstrate_log_levels(console, logger):
     """
     Demonstrate different log levels with various message types.
