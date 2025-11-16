@@ -6,6 +6,7 @@ from rich.pretty import pretty_repr
 from . import __version__
 from .logging_invoke import set_logger
 
+SECTION_NAME = 'typer-invoke'
 
 class TyperInvoke(typer.Typer):
     """Typer app that adds invoke configuration."""
@@ -19,10 +20,8 @@ def get_config() -> dict:
     """Retrieve config from ``pyproject.toml``."""
     from .pyproject import read_package_config
 
-    section_name = 'typer-invoke'
-
     try:
-        config = read_package_config(section_name)
+        config = read_package_config(SECTION_NAME)
     except Exception as e:
         raise ValueError(
             f'Could not read invoke configuration from [b]pyproject.toml[/b]. '
@@ -32,14 +31,14 @@ def get_config() -> dict:
     if not config:
         raise ValueError(
             f'Could not read invoke configuration from [b]pyproject.toml[/b], '
-            f'in section [b]{section_name}[/b].',
+            f'in section [b]{SECTION_NAME}[/b].',
         )
 
     key = 'modules'
     if key not in config:
         raise ValueError(
             f'Could not find [b]{key}[/b] key in invoke configuration from [b]pyproject.toml[/b], '
-            f'in section [b]{section_name}[/b].',
+            f'in section [b]{SECTION_NAME}[/b].',
         )
 
     return config
