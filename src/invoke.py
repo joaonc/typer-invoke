@@ -81,11 +81,11 @@ def create_app(module_paths: list[str], base_path: str | None = None, **kwargs) 
         rich_markup_mode='markdown',
     )
 
-    defaults_invoke = dict(logging_level='INFO', logging_format='%(message)s')
+    defaults_invoke = dict(log_level='INFO', log_format='%(message)s')
 
     # Initialize Invoke, which is just logging configuration
     invoke_kwargs = {k: kwargs.pop(k, v) for k, v in defaults_invoke.items()}
-    logger = set_logger(level=invoke_kwargs['logging_level'], fmt=invoke_kwargs['logging_format'])
+    logger = set_logger(level=invoke_kwargs['log_level'], fmt=invoke_kwargs['log_format'])
 
     logger.debug(f'typer-invoke {__version__}')
     logger.debug(f'Invoke kwargs: \n{pretty_repr(invoke_kwargs, expand_all=True)}')

@@ -62,8 +62,8 @@ modules = [
 no_args_is_help = true
 add_completion = false
 rich_markup_mode = 'markdown'
-logging_level = 'INFO'
-logging_format = '%(message)s'
+log_level = 'INFO'
+log_format = '%(message)s'
 
 [build-system]
 requires = ['flit_core >=3.2,<4']
@@ -72,7 +72,7 @@ build-backend = 'flit_core.buildapi'
 [project]
 name = 'typer-invoke'
 version = '0.3.0'
-description = 'Simplified invokation of typer apps from any directory.'
+description = 'Simplified invocation of typer apps from any directory.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
 license = {file = 'LICENSE.txt'}
