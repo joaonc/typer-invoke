@@ -4,7 +4,7 @@ import pytest
 import typer
 from typer.testing import CliRunner
 
-from src.invoke import create_app, load_module_app, main
+from typer_invoke.invoke import create_app, load_module_app, main
 
 
 @pytest.fixture
@@ -49,7 +49,9 @@ class TestLoadModuleApp:
 
     def test_load_module_app_success(self, mock_module_with_app):
         """Test successfully loading a module with a Typer app."""
-        with patch('src.invoke.importlib.import_module', return_value=mock_module_with_app):
+        with patch(
+            'typer_invoke.invoke.importlib.import_module', return_value=mock_module_with_app
+        ):
             result = load_module_app('sample.hello', 'foo')
 
             assert result is not None
@@ -58,7 +60,9 @@ class TestLoadModuleApp:
 
     def test_load_module_app_no_app_attribute(self, mock_module_without_app, capsys):
         """Test loading a module without an 'app' attribute."""
-        with patch('src.invoke.importlib.import_module', return_value=mock_module_without_app):
+        with patch(
+            'typer_invoke.invoke.importlib.import_module', return_value=mock_module_without_app
+        ):
             result = load_module_app('sample.noapp', 'foo')
 
             assert result is None
@@ -70,7 +74,7 @@ class TestLoadModuleApp:
         mock_module = Mock()
         mock_module.app = "not a typer app"
 
-        with patch('src.invoke.importlib.import_module', return_value=mock_module):
+        with patch('typer_invoke.invoke.importlib.import_module', return_value=mock_module):
             result = load_module_app('sample.invalid', 'foo')
 
             assert result is None
@@ -80,7 +84,8 @@ class TestLoadModuleApp:
     def test_load_module_app_import_error(self, capsys):
         """Test handling ImportError when module cannot be imported."""
         with patch(
-            'src.invoke.importlib.import_module', side_effect=ImportError('Module not found')
+            'typer_invoke.invoke.importlib.import_module',
+            side_effect=ImportError('Module not found'),
         ):
             result = load_module_app('nonexistent.module', 'foo')
 
@@ -92,7 +97,7 @@ class TestLoadModuleApp:
     def test_load_module_app_module_not_found_error(self, capsys):
         """Test handling ModuleNotFoundError specifically."""
         with patch(
-            'src.invoke.importlib.import_module',
+            'typer_invoke.invoke.importlib.import_module',
             side_effect=ModuleNotFoundError("No module named 'foo'"),
         ):
             result = load_module_app('foo.bar', 'foo')
@@ -107,7 +112,7 @@ class TestCreateApp:
 
     def test_create_app_single_module(self, mock_module_with_app):
         """Test creating app with a single module."""
-        with patch('src.invoke.load_module_app', return_value=mock_module_with_app.app):
+        with patch('typer_invoke.invoke.load_module_app', return_value=mock_module_with_app.app):
             app = create_app(['sample.hello'])
 
             assert isinstance(app, typer.Typer)
@@ -126,7 +131,7 @@ class TestCreateApp:
                 return mock_app2
             return None
 
-        with patch('src.invoke.load_module_app', side_effect=load_side_effect):
+        with patch('typer_invoke.invoke.load_module_app', side_effect=load_side_effect):
             app = create_app(['sample.hello', 'sample.world'])
 
             assert isinstance(app, typer.Typer)
@@ -140,7 +145,7 @@ class TestCreateApp:
                 return mock_typer_app
             return None
 
-        with patch('src.invoke.load_module_app', side_effect=load_side_effect):
+        with patch('typer_invoke.invoke.load_module_app', side_effect=load_side_effect):
             app = create_app(['sample.hello', 'sample.invalid'])
 
             assert isinstance(app, typer.Typer)
@@ -156,7 +161,7 @@ class TestCreateApp:
 
     def test_create_app_extracts_correct_module_name(self, mock_typer_app):
         """Test that module name is correctly extracted from path."""
-        with patch('src.invoke.load_module_app', return_value=mock_typer_app) as mock_load:
+        with patch('typer_invoke.invoke.load_module_app', return_value=mock_typer_app) as mock_load:
             app = create_app(['foo.bar.baz'])
 
             # Verify the module was loaded
@@ -168,7 +173,7 @@ class TestCreateApp:
 
     def test_create_app_module_with_single_name(self, mock_typer_app):
         """Test creating app with single-part module name."""
-        with patch('src.invoke.load_module_app', return_value=mock_typer_app):
+        with patch('typer_invoke.invoke.load_module_app', return_value=mock_typer_app):
             app = create_app(['hello'])
 
             assert isinstance(app, typer.Typer)
@@ -182,7 +187,7 @@ class TestMain:
         """Test that main creates and runs the app."""
         mock_app = Mock(spec=typer.Typer)
 
-        with patch('src.invoke.create_app', return_value=mock_app) as mock_create:
+        with patch('typer_invoke.invoke.create_app', return_value=mock_app) as mock_create:
             main()
 
             # Verify create_app was called with correct module paths
@@ -195,9 +200,9 @@ class TestMain:
 class TestIntegration:
     """Integration tests using actual sample.hello module."""
 
-    def test_load_actual_hello_module(self):
+    def test_load_actual_hello_module(self, request):
         """Test loading the actual sample.hello module."""
-        result = load_module_app('sample.hello', 'foo')
+        result = load_module_app('sample.hello', base_path=request.config.rootdir)
 
         assert result is not None
         assert isinstance(result, typer.Typer)
@@ -253,20 +258,24 @@ class TestErrorHandling:
 
     def test_load_module_app_with_syntax_error(self):
         """Test handling module with syntax error."""
-        with patch('src.invoke.importlib.import_module', side_effect=SyntaxError('Invalid syntax')):
+        with patch(
+            'typer_invoke.invoke.importlib.import_module', side_effect=SyntaxError('Invalid syntax')
+        ):
             with pytest.raises(SyntaxError):
                 load_module_app('sample.broken', 'foo')
 
     def test_load_module_app_handles_runtime_error(self, capsys):
         """Test handling RuntimeError during module loading."""
-        with patch('src.invoke.importlib.import_module', side_effect=RuntimeError('Runtime issue')):
+        with patch(
+            'typer_invoke.invoke.importlib.import_module', side_effect=RuntimeError('Runtime issue')
+        ):
             # RuntimeError is not caught by ImportError, so it should propagate
             with pytest.raises(RuntimeError):
                 load_module_app('sample.problematic', 'foo')
 
     def test_create_app_handles_none_from_load_module(self):
         """Test that create_app gracefully handles None from load_module_app."""
-        with patch('src.invoke.load_module_app', return_value=None):
+        with patch('typer_invoke.invoke.load_module_app', return_value=None):
             app = create_app(['sample.nonexistent'])
 
             # Should create app successfully even if module loading failed
@@ -289,7 +298,7 @@ class TestModuleNameExtraction:
     )
     def test_module_name_extraction(self, module_path, expected_name, mock_typer_app):
         """Test that module names are correctly extracted from various paths."""
-        with patch('src.invoke.load_module_app', return_value=mock_typer_app):
+        with patch('typer_invoke.invoke.load_module_app', return_value=mock_typer_app):
             create_app([module_path])
 
             # Check that the extracted name matches expected

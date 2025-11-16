@@ -169,7 +169,7 @@ def pip_install(requirements: RequirementsAnnotation, dry: DryAnnotation = False
     Does not require ``pip-tools``.
     """
     requirements_files = _get_requirements_files(requirements, RequirementsType.OUT)  # type: ignore
-    run(dry, 'pip', 'install', *multiple_parameters('-r', *requirements_files), dry=dry)
+    run('pip', 'install', *multiple_parameters('-r', *requirements_files), dry=dry)
 
 
 if __name__ == '__main__':
