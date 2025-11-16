@@ -48,7 +48,7 @@ def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | Non
     This function is a wrapper around ``subprocess.run(...)``.
 
     If you need access to the output, add the ``capture_output=True`` argument and do
-    ``.stdout.strip()`` to get the output as a string.
+    ``.stdout.decode().strip()`` to get the output as a string.
     """
     logger.info(' '.join(map(str, args)))
 
