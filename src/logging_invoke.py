@@ -64,7 +64,8 @@ def set_logger(level: str | int = logging.DEBUG, fmt: str = '%(message)s') -> lo
 
     global _logger
     if _logger is not None:
-        raise ValueError('Logger already initialized.')
+        _logger.debug('Setting the logger when already set. Doing nothing.')
+        return _logger
 
     # Create logger
     _logger = logging.getLogger('typer-invoke')
