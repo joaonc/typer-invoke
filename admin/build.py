@@ -194,6 +194,43 @@ def build_clean():
     shutil.rmtree(BUILD_DIST_DIR, ignore_errors=True)
 
 
+@app.command(name='publish')
+def build_publish(
+    no_upload: Annotated[
+        bool, typer.Option(help='Do not upload to Pypi.', show_default=False)
+    ] = False,
+    yes: Annotated[
+        bool,
+        typer.Option(
+            help='Don\'t ask confirmation to upload to Pypi.',
+            show_default=False,
+        ),
+    ] = False,
+    dry: DryAnnotation = False,
+):
+    """
+    Build package and publish (upload) to Pypi.
+    """
+    # Create distribution files (source and wheel)
+    run('flit', 'build', dry=dry)
+
+    # Upload to pypi
+    if not no_upload:
+        version = _get_project_version()
+        if (
+            yes
+            or input(f'Publishing version `{version}` to Pypi. Press Y to confirm. ')
+            .lower()
+            .strip()
+            == 'y'
+        ):
+            run('flit', 'publish', dry=dry)
+            if not dry:
+                logger.info('Package published to Pypi.')
+        else:
+            logger.info('Package not published to Pypi.')
+
+
 @app.command(name='version')
 def build_version(
     version: Annotated[
