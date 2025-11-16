@@ -48,7 +48,7 @@ def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | Non
     This function is a wrapper around ``subprocess.run(...)``.
 
     If you need access to the output, add the ``capture_output=True`` argument and do
-    ``.stdout.decode().strip()`` to get the output as a string.
+    ``.stdout.strip()`` to get the output as a string.
     """
     logger.info(' '.join(map(str, args)))
 
@@ -58,6 +58,7 @@ def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | Non
     defaults = dict(
         cwd=PROJECT_ROOT,
         capture_output=False,
+        text=True,
         check=True,
     )
 
@@ -66,9 +67,9 @@ def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | Non
     except subprocess.CalledProcessError as e:
         msg = str(e)
         if e.stdout:
-            msg += f'\nSTDOUT:\n{e.stdout.decode()}'
+            msg += f'\nSTDOUT:\n{e.stdout}'
         if e.stderr:
-            msg += f'\nSTDERR:\n{e.stderr.decode()}'
+            msg += f'\nSTDERR:\n{e.stderr}'
         logger.error(msg)
         raise typer.Exit(1)
 
