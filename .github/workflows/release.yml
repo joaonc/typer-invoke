@@ -65,7 +65,9 @@ jobs:
           python-version: '3.11'
 
       - name: Install requirements
-        run: pip install -r admin/requirements/requirements-dev.txt
+        run: |
+          pip install typer-invoke
+          inv pip install dev
 
       - name: Set git user
         run: |
@@ -75,7 +77,7 @@ jobs:
       - name: Bump version
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: inv build.version --bump ${{ github.event.inputs.version_bump }} --mode pr --yes
+        run: inv build version --bump ${{ github.event.inputs.version_bump }} --mode pr --yes
 
       - name: Create release
         if: github.event.inputs.create_release == 'true'
