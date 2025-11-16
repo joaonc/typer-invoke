@@ -38,10 +38,10 @@ def read_package_config(
     package_name: str, pyproject_path: str | Path | None = None
 ) -> dict[str, Any]:
     """
-    Read package configuration from pyproject.toml.
+    Read package configuration from ``pyproject.toml``.
 
     :param package_name: Name of the package to read configuration for.
-    :param pyproject_path: Path to pyproject.toml. If None, searches for it automatically.
+    :param pyproject_path: Path to ``pyproject.toml``. If None, searches for it automatically.
     :returns: Dictionary containing package configuration, empty dict if not found.
 
     :raises FileNotFoundError: If ``pyproject.toml`` is not found.
