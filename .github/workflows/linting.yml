@@ -1,3 +1,10 @@
+# Note on running admin tasks that would use `typer-invoke`:
+#   pip install typer-invoke
+#   inv some task
+#
+# Since this project *is* `typer-invoke`, we run it directly:
+#   python -m src.typer_invoke.invoke some task
+
 name: Linting
 # Linting tools use `pyproject.toml` and `setup.cfg` for config.
 
@@ -17,7 +24,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install requirements
-        run: pip install -r admin/requirements/requirements-dev.txt
+        run: python -m src.typer_invoke.invoke pip install dev
 
       - name: isort
         run: isort .

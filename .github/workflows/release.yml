@@ -11,6 +11,15 @@
 # Use the `build-asset` action.
 #
 # Requires the Pypi token in the `PYPI_TOKEN` secret.
+#
+#
+# Note on running admin tasks that would use `typer-invoke`:
+#   pip install typer-invoke
+#   inv some task
+#
+# Since this project *is* `typer-invoke`, we run it directly:
+#   python -m src.typer_invoke.invoke some task
+
 name: Release
 
 on:
@@ -62,12 +71,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install requirements
-        run: |
-          pip install typer-invoke
-          inv pip install dev
+        run: python -m src.typer_invoke.invoke pip install dev
 
       - name: Set git user
         run: |
@@ -77,17 +84,17 @@ jobs:
       - name: Bump version
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: inv build version --bump ${{ github.event.inputs.version_bump }} --mode pr --yes
+        run: python -m src.typer_invoke.invoke build version --bump ${{ github.event.inputs.version_bump }} --mode pr --yes
 
       - name: Create release
         if: github.event.inputs.create_release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: inv build.release --notes "${{ github.event.inputs.release_notes }}" --yes
+        run: python -m src.typer_invoke.invoke build release --notes "${{ github.event.inputs.release_notes }}" --yes
 
       - name: Publish to Pypi
         if: github.event.inputs.publish == 'true'
         env:
           FLIT_USERNAME: '__token__'
           FLIT_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: inv build.publish --yes
+        run: python -m src.typer_invoke.invoke build publish --yes
