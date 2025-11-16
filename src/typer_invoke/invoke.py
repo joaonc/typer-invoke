@@ -1,4 +1,5 @@
 import importlib
+from pathlib import Path
 
 import typer
 from rich.pretty import pretty_repr
@@ -45,14 +46,14 @@ def get_config() -> dict:
     return config
 
 
-def load_module_app(module_path: str, base_path: str) -> typer.Typer | None:
+def load_module_app(module_path: str, base_path: str | Path | None = None) -> typer.Typer | None:
     """Load a Typer app from a module path like 'sample.hello'."""
     import sys
 
     try:
         # Add base_path to sys.path if not already present
-        if base_path not in sys.path:
-            sys.path.insert(0, base_path)
+        if base_path and str(base_path) not in sys.path:
+            sys.path.insert(0, str(base_path))
 
         module = importlib.import_module(module_path)
         if hasattr(module, 'app') and isinstance(module.app, typer.Typer):
@@ -68,7 +69,9 @@ def load_module_app(module_path: str, base_path: str) -> typer.Typer | None:
         return None
 
 
-def create_app(module_paths: list[str], base_path: str | None = None, **kwargs) -> typer.Typer:
+def create_app(
+    module_paths: list[str], base_path: str | Path | None = None, **kwargs
+) -> typer.Typer:
     """Create a main Typer app with subcommands from specified modules."""
     if not base_path:
         from .pyproject import find_pyproject_toml

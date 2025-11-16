@@ -220,7 +220,9 @@ timeout = 45
 
     def test_get_package_setting_exception_returns_default(self, tmp_path):
         """Test returning default when exception occurs."""
-        with patch('typer_invoke.pyproject.read_package_config', side_effect=Exception('Some error')):
+        with patch(
+            'typer_invoke.pyproject.read_package_config', side_effect=Exception('Some error')
+        ):
             result = get_package_setting('invoke', 'timeout', default=120)
             assert result == 120
 
@@ -307,7 +309,9 @@ timeout = 60
 
     def test_package_config_exception_handling(self):
         """Test behavior when exception occurs during config loading."""
-        with patch('typer_invoke.pyproject.read_package_config', side_effect=Exception('Some error')):
+        with patch(
+            'typer_invoke.pyproject.read_package_config', side_effect=Exception('Some error')
+        ):
             config = PackageConfig('invoke')
 
             # Should return empty dict when exception occurs

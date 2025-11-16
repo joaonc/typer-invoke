@@ -49,7 +49,9 @@ class TestLoadModuleApp:
 
     def test_load_module_app_success(self, mock_module_with_app):
         """Test successfully loading a module with a Typer app."""
-        with patch('typer_invoke.invoke.importlib.import_module', return_value=mock_module_with_app):
+        with patch(
+            'typer_invoke.invoke.importlib.import_module', return_value=mock_module_with_app
+        ):
             result = load_module_app('sample.hello', 'foo')
 
             assert result is not None
@@ -58,7 +60,9 @@ class TestLoadModuleApp:
 
     def test_load_module_app_no_app_attribute(self, mock_module_without_app, capsys):
         """Test loading a module without an 'app' attribute."""
-        with patch('typer_invoke.invoke.importlib.import_module', return_value=mock_module_without_app):
+        with patch(
+            'typer_invoke.invoke.importlib.import_module', return_value=mock_module_without_app
+        ):
             result = load_module_app('sample.noapp', 'foo')
 
             assert result is None
@@ -80,7 +84,8 @@ class TestLoadModuleApp:
     def test_load_module_app_import_error(self, capsys):
         """Test handling ImportError when module cannot be imported."""
         with patch(
-            'typer_invoke.invoke.importlib.import_module', side_effect=ImportError('Module not found')
+            'typer_invoke.invoke.importlib.import_module',
+            side_effect=ImportError('Module not found'),
         ):
             result = load_module_app('nonexistent.module', 'foo')
 
@@ -195,9 +200,9 @@ class TestMain:
 class TestIntegration:
     """Integration tests using actual sample.hello module."""
 
-    def test_load_actual_hello_module(self):
+    def test_load_actual_hello_module(self, request):
         """Test loading the actual sample.hello module."""
-        result = load_module_app('sample.hello', 'foo')
+        result = load_module_app('sample.hello', base_path=request.config.rootdir)
 
         assert result is not None
         assert isinstance(result, typer.Typer)
@@ -253,13 +258,17 @@ class TestErrorHandling:
 
     def test_load_module_app_with_syntax_error(self):
         """Test handling module with syntax error."""
-        with patch('typer_invoke.invoke.importlib.import_module', side_effect=SyntaxError('Invalid syntax')):
+        with patch(
+            'typer_invoke.invoke.importlib.import_module', side_effect=SyntaxError('Invalid syntax')
+        ):
             with pytest.raises(SyntaxError):
                 load_module_app('sample.broken', 'foo')
 
     def test_load_module_app_handles_runtime_error(self, capsys):
         """Test handling RuntimeError during module loading."""
-        with patch('typer_invoke.invoke.importlib.import_module', side_effect=RuntimeError('Runtime issue')):
+        with patch(
+            'typer_invoke.invoke.importlib.import_module', side_effect=RuntimeError('Runtime issue')
+        ):
             # RuntimeError is not caught by ImportError, so it should propagate
             with pytest.raises(RuntimeError):
                 load_module_app('sample.problematic', 'foo')
