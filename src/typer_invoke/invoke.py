@@ -111,13 +111,17 @@ def create_app(
         console.print(help_text)
 
     for module_path in module_paths:
-        # Extract the module name (last part of the path) to use as subcommand name.
-        module_name = module_path.split('.')[-1]
-
         # Load the module's Typer app
         module_app = load_module_app(module_path, base_path)
 
         if module_app:
+            module_name = None
+            if module_info := getattr(module_app, 'info', None):
+                module_name = getattr(module_info, 'name', None)
+            if not module_name:
+                # Extract the module name (last part of the path) to use as subcommand name.
+                module_name = module_path.split('.')[-1]
+
             # Add the module's app as a subcommand group
             app.add_typer(module_app, name=module_name)
 
