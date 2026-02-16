@@ -119,7 +119,7 @@ def create_app(
             if module_info := getattr(module_app, 'info', None):
                 module_name = getattr(module_info, 'name', None)
             if module_name:
-                module_name = module_name.replace(' ', '-')
+                module_name = module_name.strip().replace(' ', '-')
             else:
                 # Extract the module name (last part of the path) to use as subcommand name.
                 module_name = module_path.split('.')[-1]
