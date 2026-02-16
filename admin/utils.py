@@ -1,12 +1,14 @@
 import logging
 import subprocess
 import sys
-from enum import Enum
+from dataclasses import dataclass
+from enum import StrEnum
 from itertools import chain
 from typing import Annotated
 
 import typer
 from rich.logging import RichHandler
+from rich.text import Text
 
 from admin import PROJECT_ROOT
 
@@ -19,12 +21,29 @@ DryAnnotation = Annotated[
 ]
 
 
-class OS(str, Enum):
+class OS(StrEnum):
     """Operating System."""
 
     Linux = 'linux'
     MacOS = 'mac'
     Windows = 'win'
+
+
+@dataclass
+class StripOutput:
+    strip_ansi: bool = True
+    normal_strip: bool = True
+    extra_chars: str | None = None
+
+    def strip(self, text: str) -> str:
+        if self.strip_ansi:
+            text = strip_ansi(text)
+        if self.normal_strip:
+            text = text.strip()
+        if self.extra_chars:
+            text = text.strip(self.extra_chars)
+
+        return text
 
 
 def get_os() -> OS:
@@ -41,14 +60,18 @@ def get_os() -> OS:
     return OS.Linux
 
 
-def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | None:
+def run(
+    *args, dry: bool = False, strip_output: StripOutput | None = StripOutput(), **kwargs
+) -> subprocess.CompletedProcess | None:
     """
     Run a CLI command synchronously (i.e., wait for the command to finish) and return the result.
 
     This function is a wrapper around ``subprocess.run(...)``.
 
     If you need access to the output, add the ``capture_output=True`` argument and do
-    ``.stdout.strip()`` to get the output as a string.
+    ``.stdout`` to get the output as a string.
+
+    Note that ``stdout`` and ``stderr`` will be stripped of ANSI escape sequences by default.
     """
     logger.info(' '.join(map(str, args)))
 
@@ -61,9 +84,10 @@ def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | Non
         text=True,
         check=True,
     )
+    final_kwargs = defaults | kwargs
 
     try:
-        return subprocess.run(args, **(defaults | kwargs))  # type: ignore
+        result = subprocess.run(args, **final_kwargs)  # type: ignore
     except subprocess.CalledProcessError as e:
         msg = str(e)
         if e.stdout:
@@ -72,6 +96,12 @@ def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | Non
             msg += f'\nSTDERR:\n{e.stderr}'
         logger.error(msg)
         raise typer.Exit(1)
+
+    if final_kwargs.get('capture_output') and strip_output:
+        result.stdout = strip_output.strip(result.stdout)
+        result.stderr = strip_output.strip(result.stderr)
+
+    return result  # type: ignore
 
 
 def run_async(*args, dry: bool = False, **kwargs) -> subprocess.Popen | None:
@@ -130,6 +160,10 @@ def multiple_parameters(parameter: str, *options) -> list[str]:
     return list(chain.from_iterable(zip([parameter] * len(options), map(str, options))))
 
 
+def strip_ansi(text: str) -> str:
+    return Text.from_ansi(text).plain
+
+
 def get_logger(name: str | None = 'typer-invoke', level=logging.DEBUG) -> logging.Logger:
     """Set up logging configuration with Rich handler and custom formatting."""
 
@@ -141,6 +175,7 @@ def get_logger(name: str | None = 'typer-invoke', level=logging.DEBUG) -> loggin
         level=level,
         show_time=False,
         show_level=True,
+        show_path=False,
         markup=True,
         rich_tracebacks=False,
     )

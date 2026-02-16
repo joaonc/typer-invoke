@@ -2,20 +2,22 @@
 
 This document tracks actionable improvements for the project. Items are grouped and roughly prioritized for incremental adoption. Feel free to check off items as they’re completed.
 
+AI generated, ticking things off as they get done and eventually remove.
+
 ## 1) Packaging & Layout
 
-- [x] Rename the distributed package from `src` to a proper name (e.g., `typer_invoke`).
-  - [x] Move sources to `src/typer_invoke/` (keep `py.typed` there).
-  - [x] Update entry point in `pyproject.toml` to `inv = 'typer_invoke.invoke:main'`.
-  - [x] Update `[tool.flit.module]` to map to the new package (e.g., `name = 'typer_invoke', directory = 'src'`).
-  - [x] Fix all internal imports accordingly.
+- ✅ Rename the distributed package from `src` to a proper name (e.g., `typer_invoke`).
+  - ✅ Move sources to `src/typer_invoke/` (keep `py.typed` there).
+  - ✅ Update entry point in `pyproject.toml` to `inv = 'typer_invoke.invoke:main'`.
+  - ✅ Update `[tool.flit.module]` to map to the new package (e.g., `name = 'typer_invoke', directory = 'src'`).
+  - ✅ Fix all internal imports accordingly.
 
 ## 2) Python 3.12 Typing & Enums
 
-- [ ] Use `enum.StrEnum` for string enums (requires Python 3.11+).
-  - [ ] In `admin/utils.py`, convert `class OS(str, Enum)` → `class OS(StrEnum)`.
+- ✅ Use `enum.StrEnum` for string enums (requires Python 3.11+).
+  - ✅ In `admin/utils.py`, convert `class OS(str, Enum)` → `class OS(StrEnum)`.
 - [ ] Introduce typed config schema using `TypedDict` (and `Required`/`NotRequired` as needed).
-- [x] Prefer modern union syntax (`|`) consistently (already used in most places).
+- ✅ Prefer modern union syntax (`|`) consistently (already used in most places).
 
 ## 3) Logging Ergonomics and Safety
 
@@ -81,7 +83,7 @@ This document tracks actionable improvements for the project. Items are grouped 
 
 ## 11) Documentation
 
-- [x] Fix typo in project description: “invokation” → “invocation”.
+- ✅ Fix typo in project description: “invokation” → “invocation”.
 - [ ] Expand README with a Quickstart:
   - [ ] Install package.
   - [ ] Create a minimal Typer module with `app`.
@@ -92,12 +94,15 @@ This document tracks actionable improvements for the project. Items are grouped 
 
 ## 12) Release Quality of Life
 
-- [ ] Consider changelog tooling (Keep a Changelog/Towncrier).
-- [ ] Optionally auto-generate release notes from PR titles/labels in the release workflow.
-- [ ] Build wheels (`py3-none-any`) via Flit and document `pipx` installation for the CLI.
+- ❌ Consider changelog tooling (Keep a Changelog/Towncrier).  
+   Won't do / not needed.
+- ❌ Optionally auto-generate release notes from PR titles/labels in the release workflow.  
+   Won't do / not needed.
+- [ ] Build wheels (`py3-none-any`) via Flit.
+- ✅ Document `pipx` installation for the CLI (added issue for follow-up).
 
 ---
 
 Notes:
-- Current files of interest: `src/invoke.py`, `src/logging_invoke.py`, `src/pyproject.py`, `admin/utils.py`, `admin/build.py`, `pyproject.toml`, `.github/workflows/release.yml`.
+- Current files of interest: `src/typer_invoke/invoke.py`, `src/typer_invoke/logging_invoke.py`, `src/typer_invoke/pyproject.py`, `admin/utils.py`, `admin/build.py`, `pyproject.toml`, `.github/workflows/release.yml`.
 - Python target: 3.12 features and syntax are welcome; keep `requires-python` aligned in `pyproject.toml`.
