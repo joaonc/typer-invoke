@@ -2,7 +2,7 @@ import logging
 import subprocess
 import sys
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from itertools import chain
 from typing import Annotated
 
@@ -21,7 +21,7 @@ DryAnnotation = Annotated[
 ]
 
 
-class OS(str, Enum):
+class OS(StrEnum):
     """Operating System."""
 
     Linux = 'linux'

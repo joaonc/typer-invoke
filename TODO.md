@@ -14,8 +14,8 @@ AI generated, ticking things off as they get done and eventually remove.
 
 ## 2) Python 3.12 Typing & Enums
 
-- [ ] Use `enum.StrEnum` for string enums (requires Python 3.11+).
-  - [ ] In `admin/utils.py`, convert `class OS(str, Enum)` → `class OS(StrEnum)`.
+- ✅ Use `enum.StrEnum` for string enums (requires Python 3.11+).
+  - ✅ In `admin/utils.py`, convert `class OS(str, Enum)` → `class OS(StrEnum)`.
 - [ ] Introduce typed config schema using `TypedDict` (and `Required`/`NotRequired` as needed).
 - ✅ Prefer modern union syntax (`|`) consistently (already used in most places).
 
@@ -99,7 +99,7 @@ AI generated, ticking things off as they get done and eventually remove.
 - ❌ Optionally auto-generate release notes from PR titles/labels in the release workflow.  
    Won't do / not needed.
 - [ ] Build wheels (`py3-none-any`) via Flit.
-- [ ] Document `pipx` installation for the CLI.
+- ✅ Document `pipx` installation for the CLI (added issue for follow-up).
 
 ---
 
