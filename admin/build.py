@@ -123,7 +123,7 @@ def _get_latest_release(dry: bool) -> tuple[str, str, list[dict]]:
 
     release_info_json = run(
         'gh', 'release', 'view', '--json', 'name,tagName,assets', dry=dry, capture_output=True
-    ).stdout.strip()  # type: ignore
+    ).stdout  # type: ignore
     release_info = json.loads(release_info_json)
     return release_info['name'], release_info['tagName'], release_info['assets']
 
@@ -132,7 +132,7 @@ def _get_branch():
     """Returns the current branch."""
     return run(
         'git', 'branch', '--show-current', dry=False, capture_output=True
-    ).stdout.strip()  # type: ignore
+    ).stdout  # type: ignore
 
 
 def _get_default_branch():
