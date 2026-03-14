@@ -1,53 +1,74 @@
-click==8.3.0
+annotated-doc==0.0.4
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
+    #   typer
+click==8.3.1
+    # via
+    #   -r requirements.txt
     #   typer
 colorama==0.4.6
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   click
     #   pytest
 iniconfig==2.3.0
     # via pytest
-markdown-it-py==4.0.0
+librt==0.8.1
+    # via mypy
+linkify-it-py==2.1.0
+    # via markdown-it-py
+markdown-it-py[linkify]==4.0.0
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
+    #   mdit-py-plugins
     #   rich
+    #   textual
+mdit-py-plugins==0.5.0
+    # via textual
 mdurl==0.1.2
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   markdown-it-py
-mypy==1.18.2
-    # via -r admin/requirements/requirements-dev.in
+mypy==1.19.1
+    # via -r requirements-dev.in
 mypy-extensions==1.1.0
     # via mypy
-packaging==25.0
+packaging==26.0
     # via pytest
-pathspec==0.12.1
+pathspec==1.0.4
     # via mypy
+platformdirs==4.9.4
+    # via textual
 pluggy==1.6.0
     # via pytest
 pygments==2.19.2
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   pytest
     #   rich
-pytest==9.0.1
-    # via -r admin/requirements/requirements-dev.in
-rich==14.2.0
+    #   textual
+pytest==9.0.2
+    # via -r requirements-dev.in
+rich==14.3.3
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
+    #   textual
     #   typer
 ruff==0.15.6
-    # via -r admin/requirements/requirements-dev.in
+    # via -r requirements-dev.in
 shellingham==1.5.4
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   typer
-typer==0.20.0
-    # via -r admin/requirements/requirements.txt
+textual==8.1.1
+    # via textual-searchable-selectionlist
+textual-searchable-selectionlist==0.0.7
+    # via -r requirements-dev.in
+typer==0.24.1
+    # via -r requirements.txt
 typing-extensions==4.15.0
     # via
-    #   -r admin/requirements/requirements.txt
     #   mypy
-    #   typer
+    #   textual
+uc-micro-py==2.0.0
+    # via linkify-it-py

@@ -3,6 +3,7 @@
 # Dev
 mypy                # Code inspector
 ruff                # Linter and formatter
+textual_searchable_selectionlist  # CLI selection widget
 
 # Test
 pytest              # Test framework
