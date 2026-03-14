@@ -10,11 +10,11 @@ pygments==2.19.2
     # via rich
 rich==14.2.0
     # via
-    #   -r requirements.in
+    #   -r admin/requirements/requirements.in
     #   typer
 shellingham==1.5.4
     # via typer
 typer==0.20.0
-    # via -r requirements.in
+    # via -r admin/requirements/requirements.in
 typing-extensions==4.15.0
     # via typer
