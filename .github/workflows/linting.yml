@@ -14,6 +14,9 @@ on:
 jobs:
   linting:
     runs-on: ubuntu-latest
+    env:
+      UV_SYSTEM_PYTHON: '1'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -29,10 +32,10 @@ jobs:
       - name: Create virtual environment
         run: uv venv
 
+      # Use code from this project to run the admin tasks
       - name: Install requirements
         run: |
-          uv pip install typer
-          python -m src.typer_invoke.invoke pip install dev
+          uv run python -m src.typer_invoke.invoke pip install dev
 
       - name: Linting
-        run: python -m src.typer_invoke.invoke lint all --check
+        run: uv run  python -m src.typer_invoke.invoke lint all --check

@@ -20,7 +20,7 @@ app = typer.Typer()
 
 
 def _update_project_version(version: str):
-    regex = r'''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$'''
+    regex = r"""^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$"""
     for file in VERSION_FILES:
         _re_sub_file(file, regex, version)
 
@@ -28,7 +28,7 @@ def _update_project_version(version: str):
 def _get_project_version() -> str:
     import re
 
-    pattern = re.compile('''^[ _]*version[ _]*[:=] *['"](.*)['"]''', re.MULTILINE)
+    pattern = re.compile("""^[ _]*version[ _]*[:=] *['"](.*)['"]""", re.MULTILINE)
     versions = {}
     for file in VERSION_FILES:
         with open(file) as f:
@@ -130,9 +130,7 @@ def _get_latest_release(dry: bool) -> tuple[str, str, list[dict]]:
 
 def _get_branch():
     """Returns the current branch."""
-    return run(
-        'git', 'branch', '--show-current', dry=False, capture_output=True
-    ).stdout  # type: ignore
+    return run('git', 'branch', '--show-current', dry=False, capture_output=True).stdout  # type: ignore
 
 
 def _get_default_branch():
@@ -213,7 +211,7 @@ def build_publish(
     yes: Annotated[
         bool,
         typer.Option(
-            help='Don\'t ask confirmation to upload to Pypi.',
+            help="Don't ask confirmation to upload to Pypi.",
             show_default=False,
         ),
     ] = False,
@@ -274,7 +272,7 @@ def build_version(
     yes: Annotated[
         bool,
         typer.Option(
-            help='Don\'t ask confirmation to create new branch if necessary.',
+            help="Don't ask confirmation to create new branch if necessary.",
             show_default=False,
         ),
     ] = False,
