@@ -73,9 +73,15 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Create virtual environment
+        run: uv venv
+
       - name: Install requirements
         run: |
-          pip install typer
+          uv pip install typer
           python -m src.typer_invoke.invoke pip install dev
 
       - name: Set git user
@@ -97,6 +103,5 @@ jobs:
       - name: Publish to Pypi
         if: github.event.inputs.publish == 'true'
         env:
-          FLIT_USERNAME: '__token__'
-          FLIT_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: python -m src.typer_invoke.invoke build publish --yes

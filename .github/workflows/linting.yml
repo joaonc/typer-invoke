@@ -6,7 +6,7 @@
 #   python -m src.typer_invoke.invoke some task
 
 name: Linting
-# Linting tools use `pyproject.toml` and `setup.cfg` for config.
+# Linting tools use `pyproject.toml` for config.
 
 on:
   - pull_request
@@ -23,16 +23,16 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Create virtual environment
+        run: uv venv
+
       - name: Install requirements
         run: |
-          pip install typer
+          uv pip install typer
           python -m src.typer_invoke.invoke pip install dev
 
-      - name: isort
-        run: isort .
-      - name: black
-        run: black .
-      - name: flake8
-        run: flake8 .
-      - name: mypy
-        run: mypy src && mypy admin
+      - name: Linting
+        run: python -m src.typer_invoke.invoke lint all --check

@@ -3,7 +3,7 @@ from typing import Annotated
 
 import typer
 
-from admin import PROJECT_ROOT, SOURCE_DIR
+from admin import PROJECT_NAME, PROJECT_ROOT, SOURCE_DIR
 from admin.utils import DryAnnotation, logger, run
 
 BUILD_DIST_DIR = PROJECT_ROOT / 'dist'
@@ -188,10 +188,21 @@ def _create_pr(title: str, description: str, dry: bool):
 
 
 @app.command(name='clean')
-def build_clean():
-    import shutil
+def build_clean(dry: DryAnnotation = False):
+    """
+    Clean build files.
+    """
+    from admin.utils import OS, get_os
 
-    shutil.rmtree(BUILD_DIST_DIR, ignore_errors=True)
+    paths = [f'{PROJECT_NAME}.egg-info', 'dist', 'build']
+    if get_os() is OS.Windows:
+        # Assuming PowerShell 6.0+
+        full_command = (
+            'Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path ' + ', '.join(paths)
+        )
+        run('pwsh', '-Command', full_command, dry=dry, check=False)
+    else:
+        run('rm', '-rf', *paths, dry=dry)
 
 
 @app.command(name='publish')
@@ -211,8 +222,10 @@ def build_publish(
     """
     Build package and publish (upload) to Pypi.
     """
+    build_clean(dry)
+
     # Create distribution files (source and wheel)
-    run('flit', 'build', dry=dry)
+    run('uv', 'build', dry=dry)
 
     # Upload to pypi
     if not no_upload:
@@ -224,7 +237,7 @@ def build_publish(
             .strip()
             == 'y'
         ):
-            run('flit', 'publish', dry=dry)
+            run('uv', 'publish', dry=dry)
             if not dry:
                 logger.info('Package published to Pypi.')
         else:

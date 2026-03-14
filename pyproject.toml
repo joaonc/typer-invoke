@@ -1,20 +1,29 @@
-[tool.black]
+[tool.ruff]
 line-length = 100
-target-version = ['py312']
-skip-string-normalization = true
-extend-exclude='''
-(
-  \.venv.*
-  | \venv.*
-)
-'''
+target-version = 'py312'
+exclude = [
+    '.venv*',
+    'venv*',
+    'build',
+    'dist',
+]
 
-[tool.isort]
-profile = 'black'
-sections = 'FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER'
-skip_glob = ['**/.venv*', '**/venv*', '/build']
+[tool.ruff.lint]
+select = ['E', 'F', 'W', 'I']
+# E266: too many leading '#' for block comment
+# E501: line too long - handled by the formatter
+# E701: multiple statements on one line (colon) - conflicts with empty class definitions
+#   formatted by ruff as `class FileUpdateError(Exception): ...`
+# F811: redefinition of unused name from import (happens when importing pytest fixtures)
+extend-ignore = ['E266', 'E501', 'E701', 'F811']
 
-[tool.pytest]
+[tool.ruff.lint.isort]
+# Default section order: FUTURE, STDLIB, THIRDPARTY, FIRSTPARTY, LOCALFOLDER
+
+[tool.ruff.format]
+quote-style = 'single'
+
+[tool.pytest.ini_options]
 pythonpath = ['src']
 testpaths = ['tests']
 addopts = ['--strict-markers', '-v']
@@ -36,20 +45,6 @@ exclude = [
 module = []
 ignore_missing_imports = true
 
-[tool.flake8]
-max-line-length = 100
-# Errors being ignored:
-# E203 is not PEP8 compliant and clashes with black
-# E701,E704 multiple statements on one line (colon)
-#   Conflict with `black`, where empty class definitions (with Ellipsis) are formatted to be in
-#   one line in `black`, ex `class FileUpdateError(Exception): ...`
-# W503 line break before binary operator clashes with black
-# F811 redefinition of unused import happens when importing pytest fixtures in test modules
-extend-ignore = ['E203', 'E266', 'E501', 'W503', 'F811']
-exclude = [
-    '.git', '.github', '__pycache__', '.venv*', 'venv*', 'build', 'dist', 'docs'
-]
-
 [tool.typer-invoke]
 # Paths from where `pyproject.toml` is located (root of project)
 modules = [
@@ -66,8 +61,8 @@ log_level = 'INFO'
 log_format = '%(message)s'
 
 [build-system]
-requires = ['flit_core >=3.2,<4']
-build-backend = 'flit_core.buildapi'
+requires = ['uv_build>=0.10.4,<0.11.0']
+build-backend = 'uv_build'
 
 [project]
 name = 'typer-invoke'
@@ -75,7 +70,8 @@ version = '0.5.0'
 description = 'Simplified invocation of typer apps from any directory.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
-license = {file = 'LICENSE.txt'}
+license = 'MIT'
+license-files = ['LICENSE.txt']
 requires-python = '>=3.10'
 # Keep dependencies synced with `requirements.in`
 dependencies = [
@@ -97,7 +93,3 @@ Home = 'https://github.com/joaonc/typer-invoke'
 
 [project.scripts]
 inv = 'typer_invoke.invoke:main'
-
-[tool.flit.module]
-name = 'typer_invoke'
-directory = 'src'

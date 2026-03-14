@@ -25,6 +25,16 @@ inv test unit --pri1
 In this project there's the `admin` directory with scripts actually used for managing the project
 and the `sample` directory with more samples on how to use this package.
 
+## Development and testing
+
+[`uv`](https://docs.astral.sh/uv/) is required for development. Install it first, then set up
+the environment:
+
+```bash
+uv venv
+uv pip install -r admin/requirements/requirements-dev.txt
+```
+
 ## Why?
 The main use case is for project management that require custom scripts for various tasks.  
 Wrapping those scripts as typer apps makes them easier to use.  
