@@ -20,11 +20,11 @@ def mock_typer_app():
 
     @app.command()
     def test_command():
-        typer.echo("test output")
+        typer.echo('test output')
 
     @app.command()
     def another_command(name: str):
-        typer.echo(f"Hello {name}")
+        typer.echo(f'Hello {name}')
 
     return app
 
@@ -72,7 +72,7 @@ class TestLoadModuleApp:
     def test_load_module_app_app_not_typer_instance(self, capsys):
         """Test loading a module where 'app' is not a Typer instance."""
         mock_module = Mock()
-        mock_module.app = "not a typer app"
+        mock_module.app = 'not a typer app'
 
         with patch('typer_invoke.invoke.importlib.import_module', return_value=mock_module):
             result = load_module_app('sample.invalid', 'foo')
@@ -92,7 +92,7 @@ class TestLoadModuleApp:
             assert result is None
             captured = capsys.readouterr()
             assert 'Could not import module' in captured.err
-            assert "nonexistent.module" in captured.err
+            assert 'nonexistent.module' in captured.err
 
     def test_load_module_app_module_not_found_error(self, capsys):
         """Test handling ModuleNotFoundError specifically."""

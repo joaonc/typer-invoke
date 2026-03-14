@@ -3,7 +3,7 @@ from typing import Annotated
 
 import typer
 
-from admin import PROJECT_ROOT, SOURCE_DIR
+from admin import PROJECT_NAME, PROJECT_ROOT, SOURCE_DIR
 from admin.utils import DryAnnotation, logger, run
 
 BUILD_DIST_DIR = PROJECT_ROOT / 'dist'
@@ -20,7 +20,7 @@ app = typer.Typer()
 
 
 def _update_project_version(version: str):
-    regex = r'''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$'''
+    regex = r"""^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$"""
     for file in VERSION_FILES:
         _re_sub_file(file, regex, version)
 
@@ -28,7 +28,7 @@ def _update_project_version(version: str):
 def _get_project_version() -> str:
     import re
 
-    pattern = re.compile('''^[ _]*version[ _]*[:=] *['"](.*)['"]''', re.MULTILINE)
+    pattern = re.compile("""^[ _]*version[ _]*[:=] *['"](.*)['"]""", re.MULTILINE)
     versions = {}
     for file in VERSION_FILES:
         with open(file) as f:
@@ -130,9 +130,7 @@ def _get_latest_release(dry: bool) -> tuple[str, str, list[dict]]:
 
 def _get_branch():
     """Returns the current branch."""
-    return run(
-        'git', 'branch', '--show-current', dry=False, capture_output=True
-    ).stdout  # type: ignore
+    return run('git', 'branch', '--show-current', dry=False, capture_output=True).stdout  # type: ignore
 
 
 def _get_default_branch():
@@ -188,10 +186,21 @@ def _create_pr(title: str, description: str, dry: bool):
 
 
 @app.command(name='clean')
-def build_clean():
-    import shutil
+def build_clean(dry: DryAnnotation = False):
+    """
+    Clean build files.
+    """
+    from admin.utils import OS, get_os
 
-    shutil.rmtree(BUILD_DIST_DIR, ignore_errors=True)
+    paths = [f'{PROJECT_NAME}.egg-info', 'dist', 'build']
+    if get_os() is OS.Windows:
+        # Assuming PowerShell 6.0+
+        full_command = (
+            'Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path ' + ', '.join(paths)
+        )
+        run('pwsh', '-Command', full_command, dry=dry, check=False)
+    else:
+        run('rm', '-rf', *paths, dry=dry)
 
 
 @app.command(name='publish')
@@ -202,7 +211,7 @@ def build_publish(
     yes: Annotated[
         bool,
         typer.Option(
-            help='Don\'t ask confirmation to upload to Pypi.',
+            help="Don't ask confirmation to upload to Pypi.",
             show_default=False,
         ),
     ] = False,
@@ -211,8 +220,10 @@ def build_publish(
     """
     Build package and publish (upload) to Pypi.
     """
+    build_clean(dry)
+
     # Create distribution files (source and wheel)
-    run('flit', 'build', dry=dry)
+    run('uv', 'build', dry=dry)
 
     # Upload to pypi
     if not no_upload:
@@ -224,7 +235,7 @@ def build_publish(
             .strip()
             == 'y'
         ):
-            run('flit', 'publish', dry=dry)
+            run('uv', 'publish', dry=dry)
             if not dry:
                 logger.info('Package published to Pypi.')
         else:
@@ -261,7 +272,7 @@ def build_version(
     yes: Annotated[
         bool,
         typer.Option(
-            help='Don\'t ask confirmation to create new branch if necessary.',
+            help="Don't ask confirmation to create new branch if necessary.",
             show_default=False,
         ),
     ] = False,

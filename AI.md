@@ -32,10 +32,8 @@ typer-invoke/
 - Minimum: Python 3.10
 
 ### Code Style
-- **Formatter**: Black (line length: 100, skip string normalization)
-- **Import sorting**: isort (black profile)
+- **Formatter/Linter**: ruff (line length: 100, single quotes)
 - **Type checking**: mypy (check_untyped_defs enabled, disallow_untyped_defs disabled)
-- **Linting**: flake8 (max line length: 100)
 
 ### Key Configuration
 ```toml
@@ -58,15 +56,14 @@ rich_markup_mode = 'markdown'
 
 ### Testing
 ```bash
-pytest
+uv run pytest
 ```
 
 ### Code Quality
 ```bash
-black .
-isort .
+ruff check --fix .
+ruff format .
 mypy .
-flake8 .
 ```
 
 ### Build
@@ -88,9 +85,10 @@ Uses the `admin.build` module via the `inv` command.
 
 ## When Making Changes
 
-1. Follow black/isort formatting (configs in `pyproject.toml`)
+1. Follow ruff formatting (configs in `pyproject.toml`)
 2. Run type checking with mypy
 3. Add tests in `tests/` directory
 4. Update README.md if user-facing changes
 5. Ensure Python 3.10+ compatibility
 6. Keep dependencies minimal
+7. Use `uv` for all package management (not `pip` directly)

@@ -22,7 +22,7 @@ def test_unit(dry: DryAnnotation = False):
 
     Unit test configuration in ``pyproject.toml``.
     """
-    run('pytest', '.', dry=dry)
+    run('uv', 'run', 'pytest', dry=dry)
 
 
 if __name__ == '__main__':

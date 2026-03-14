@@ -1,15 +1,6 @@
-import sys
+import tomllib
 from pathlib import Path
 from typing import Any, cast
-
-# Import the appropriate TOML library
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    try:
-        import tomli as tomllib
-    except ImportError:
-        raise ImportError('tomli is required for Python < 3.11. Install with: pip install tomli')
 
 
 def find_pyproject_toml(start_path: str | Path | None = None) -> Path:
